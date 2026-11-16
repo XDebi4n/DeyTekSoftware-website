@@ -12,7 +12,7 @@
     "auth/invalid-email":"Ese correo no es válido.", "auth/too-many-requests":"Demasiados intentos. Espera un momento.",
     "auth/popup-closed-by-user":"", "auth/cancelled-popup-request":"", "auth/popup-blocked":"El navegador bloqueó la ventana de Google.",
     "auth/network-request-failed":"Sin conexión. Revisa tu internet.", "auth/operation-not-allowed":"Ese método no está activado en Firebase.",
-    "auth/unauthorized-domain":"Este dominio no está autorizado en Firebase.", "permission-denied":"Faltan las reglas de Firestore (ver README)."
+    "auth/unauthorized-domain":"Este dominio no está autorizado en Firebase.", "auth/operation-not-supported-in-this-environment":"Abre el sitio desde http://localhost (Live Server), no como archivo.", "auth/web-storage-unsupported":"Tu navegador bloquea el almacenamiento o las cookies de este sitio.", "permission-denied":"Faltan las reglas de Firestore (ver README)."
   };
   const acct = $("#acct"), A = $("#auth"), P = $("#profile"), astat = $("#astatus"), pstat = $("#pstatus");
   const avatar = n => "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx=".3" cy=".25"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#8e8e93"/></radialGradient></defs><rect width="100" height="100" fill="url(#g)"/><text x="50" y="66" font-size="48" font-family="sans-serif" font-weight="700" text-anchor="middle" fill="#000">${((n||"?")[0]).toUpperCase().replace(/[<>&"']/g,"?")}</text></svg>`);
@@ -36,12 +36,24 @@
   }
   async function run(btn, out, fn){
     btn.disabled = true; out.textContent = "";
-    try{ await fn(); }catch(e){ out.textContent = ERR[e.code] ?? "No se pudo completar. Inténtalo de nuevo."; }
+    try{ await fn(); }catch(e){ if(!(e.code in ERR)) console.error(e);
+      out.textContent = ERR[e.code] ?? ("No se pudo completar. Inténtalo de nuevo." + (e.code ? " (" + e.code + ")" : "")); }
     btn.disabled = false;
   }
   async function load(u){
     const n = ++seq; let d = {};
-    try{ d = (await db.collection("users").doc(u.uid).get()).data() || {}; }catch(e){}
+    try{
+      const ref = db.collection("users").doc(u.uid);
+      d = (await ref.get()).data() || {};
+      // Sincroniza nombre, correo y foto para que los amigos puedan encontrarlo
+      const syncData = {
+        name: d.name || u.displayName || (u.email || "").split("@")[0] || "Jugador",
+        email: (u.email || "").toLowerCase(),
+        photo: d.photo || u.photoURL || ""
+      };
+      await ref.set(syncData, {merge:true});
+      d = {...d, ...syncData};
+    }catch(e){}
     if(n === seq){ profile = d; render(); }
   }
   function resize(file){
@@ -73,7 +85,7 @@
       if(signup){
         const nm = f.name.value.trim().slice(0,40), c = await auth.createUserWithEmailAndPassword(em, pw);
         await c.user.updateProfile({displayName:nm});
-        await db.collection("users").doc(c.user.uid).set({name:nm, photo:""}, {merge:true});
+        await db.collection("users").doc(c.user.uid).set({name:nm, email:em.toLowerCase(), photo:""}, {merge:true});
         await load(c.user);
       } else await auth.signInWithEmailAndPassword(em, pw);
       f.reset();
@@ -90,14 +102,15 @@
     const nm = $("#pname").value.trim().slice(0,40); if(!nm) throw {code:"noname"};
     await user.updateProfile({displayName:nm});
     const photo = newPhoto || profile.photo || "";
-    await db.collection("users").doc(user.uid).set({name:nm, photo}, {merge:true});
-    profile = {name:nm, photo}; newPhoto = ""; render(); pstat.textContent = "Cambios guardados.";
+    await db.collection("users").doc(user.uid).set({name:nm, email:(user.email||"").toLowerCase(), photo}, {merge:true});
+    profile = {...profile, name:nm, photo}; newPhoto = ""; render(); pstat.textContent = "Cambios guardados.";
   });
   $("#pout").onclick = async () => { if(ready) await auth.signOut(); P.close(); };
 
   window.openAuth = () => { if(!A.open){ setMode(false); A.showModal(); } };
   if(ready) auth.onAuthStateChanged(async u => {
-    user = u; window.deytekUser = u; document.dispatchEvent(new Event("deytek:auth"));
+    user = u; window.deytekUser = u;
     if(u){ if(A.open) A.close(); render(); await load(u); } else { profile = {}; render(); }
+    document.dispatchEvent(new Event("deytek:auth"));
   });
 })();

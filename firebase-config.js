@@ -1,10 +1,9 @@
-/* Pega aquí la configuración de tu app web de Firebase
-   (Consola de Firebase > Configuración del proyecto > Tus apps > Web).
-   Mientras sea null, el botón Entrar abre el cuadro pero las cuentas no funcionan.
-
-   window.FIREBASE_CONFIG = {
-     apiKey: "...", authDomain: "tu-proyecto.firebaseapp.com",
-     projectId: "tu-proyecto", appId: "..."
-   };
-*/
-window.FIREBASE_CONFIG = null;
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBo_GG7ARt-fSQlboDUKFz0lIHMcLQA0is",
+  authDomain: "deyteksoftware-23345.firebaseapp.com",
+  projectId: "deyteksoftware-23345",
+  storageBucket: "deyteksoftware-23345.firebasestorage.app",
+  messagingSenderId: "869870037506",
+  appId: "1:869870037506:web:5c2056b7bfa7205776d51b",
+  measurementId: "G-9V592Y1QT8"
+};

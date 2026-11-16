@@ -267,3 +267,56 @@ fieldset{border:0;min-width:0}
 .rf .btn{height:42px;padding:0 22px;margin:0;width:auto}
 .cnone{color:var(--mut);text-align:center}
 @media(max-width:600px){.prow{grid-template-columns:1fr}}
+
+/* === Sistema de Amigos y Chat === */
+.social-trigger{height:42px;padding:0 18px;font-size:15px;gap:8px;flex:none}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fff;color:#000;font-size:12px;font-weight:700}
+
+#social-dlg{width:min(920px,calc(100% - 24px));height:min(640px,86vh);padding:0;text-align:left;overflow:hidden}
+.social-wrap{display:grid;grid-template-columns:300px 1fr;height:100%}
+.social-side{display:flex;flex-direction:column;padding:22px 18px;border-right:1px solid var(--line);background:rgba(255,255,255,.03);overflow:hidden}
+.social-side h3{margin-bottom:12px}
+
+.fsearch{display:flex;gap:8px}
+.fsearch input{margin:0!important;padding:10px 14px!important;font-size:14px;border-radius:999px!important}
+.btn.sm{height:38px;padding:0 14px;font-size:14px;margin:0!important;width:auto!important;flex:none}
+#fstatus{font-size:13px;min-height:1.2em;margin:8px 0 4px;color:#fff}
+
+.sec-lbl{display:block;margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.flist{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+#ffriend-list{flex:1}
+
+.fitem{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:16px;border:1px solid transparent;background:rgba(255,255,255,.04);color:#fff;text-align:left;font:inherit}
+.fbtn{cursor:pointer;transition:background .25s}
+.fbtn:hover,.fbtn.on{background:rgba(255,255,255,.15);border-color:var(--line)}
+.fitem img,.chat-head img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none}
+.fmeta{min-width:0;flex:1}
+.fmeta b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmeta small{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fbtns{display:flex;gap:4px}
+
+/* Panel derecho: Chat */
+.social-chat{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:12px;padding:16px 56px 16px 20px;border-bottom:1px solid var(--line);min-height:70px;font-weight:600}
+.chat-head small{display:block;font-weight:400;font-size:12px;color:var(--mut)}
+.chat-body{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+
+.msg{max-width:74%;padding:10px 14px;border-radius:20px;font-size:15px;line-height:1.4;word-break:break-word;position:relative}
+.msg p{color:inherit;margin:0;white-space:pre-wrap}
+.msg small{display:block;font-size:11px;margin-top:4px;opacity:.65;text-align:right}
+.msg.mine{align-self:flex-end;background:#fff;color:#000;border-bottom-right-radius:6px}
+.msg.theirs{align-self:flex-start;background:rgba(255,255,255,.12);border:1px solid var(--line);color:#fff;border-bottom-left-radius:6px}
+.mimg{display:block;max-width:100%;max-height:260px;border-radius:14px;margin-bottom:6px;cursor:zoom-in}
+
+.chat-prev{position:relative;padding:10px 20px 0;display:flex;align-items:center}
+.chat-prev img{height:76px;border-radius:12px;border:1px solid var(--line)}
+.chat-prev button{margin-left:8px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.6);color:#fff;cursor:pointer}
+
+.chat-form{display:flex;align-items:center;gap:8px;padding:14px 18px;border-top:1px solid var(--line)}
+.chat-form input[type=text]{margin:0!important;padding:11px 16px!important;border-radius:999px!important;font-size:15px}
+.photo-lbl{padding:0 12px!important;font-size:18px}
+
+@media(max-width:720px){
+  .social-wrap{grid-template-columns:1fr;grid-template-rows:230px 1fr}
+  .social-side{border-right:0;border-bottom:1px solid var(--line);padding:14px}
+}

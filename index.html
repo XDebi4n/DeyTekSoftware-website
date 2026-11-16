@@ -20,6 +20,9 @@
     <kbd>Ctrl K</kbd>
     <ul id="results" class="glass" role="listbox" hidden></ul>
   </div>
+  <button type="button" class="btn glass social-trigger" id="social-btn" hidden>
+    Amigos <span class="badge" id="sbadge" hidden>0</span>
+  </button>
   <button type="button" class="btn glass acct" id="acct">Entrar</button>
 </header>
 
@@ -110,9 +113,11 @@
 <footer>
   <span>© 2026 Deytek Software</span>
   <span><a href="#unete">Únete</a> · <a href="#">Privacidad</a> · <a href="#">Términos</a></span>
-<span class="tog"><span>Música</span><button type="button" role="switch" aria-checked="true" aria-label="Música de fondo" id="music" class="switch"><i></i></button></span>
+  <span class="tog"><span>Música</span><button type="button" role="switch" aria-checked="true" aria-label="Música de fondo" id="music" class="switch"><i></i></button></span>
 </footer>
+
 <dialog id="detail" aria-label="Detalle"><button type="button" class="x" id="dx" aria-label="Cerrar">×</button><div id="dc"></div></dialog>
+
 <dialog id="verify" aria-labelledby="vt">
   <h3 id="vt">Verifica que eres humano</h3>
   <p>Desliza hasta el final para enviar tu solicitud.</p>
@@ -123,6 +128,7 @@
   </div>
   <button type="button" class="btn glass" id="cancel">Cancelar</button>
 </dialog>
+
 <dialog id="auth" aria-labelledby="at">
   <h3 id="at">Entra a Deytek</h3>
   <button type="button" class="btn solid" id="google">Continuar con Google</button>
@@ -138,6 +144,7 @@
   <p id="astatus" role="status"></p>
   <button type="button" class="btn glass" id="aclose">Cerrar</button>
 </dialog>
+
 <dialog id="profile" aria-labelledby="pt">
   <h3 id="pt">Tu perfil</h3>
   <label class="pic"><img id="pimg" alt="Foto de perfil"><input type="file" id="pfile" accept="image/*"><span>Cambiar foto</span></label>
@@ -148,12 +155,54 @@
   <button type="button" class="link" id="pclose">Cerrar</button>
   <p id="pstatus" role="status"></p>
 </dialog>
+
+<dialog id="social-dlg" aria-label="Amigos y Chat">
+  <button type="button" class="x" id="sclose" aria-label="Cerrar">×</button>
+  <div class="social-wrap">
+    <aside class="social-side">
+      <h3>Amigos</h3>
+      <form id="fsearch" class="fsearch">
+        <input id="fquery" type="text" placeholder="Correo o nombre exacto…" required>
+        <button type="submit" class="btn solid sm" aria-label="Agregar">+</button>
+      </form>
+      <p id="fstatus" role="status"></p>
+
+      <div id="freq-box" hidden>
+        <small class="sec-lbl">Solicitudes</small>
+        <div id="freq-list" class="flist"></div>
+      </div>
+
+      <small class="sec-lbl">Tus amigos</small>
+      <div id="ffriend-list" class="flist"></div>
+    </aside>
+
+    <div class="social-chat">
+      <header id="chat-head" class="chat-head">
+        <span>Selecciona un amigo para chatear</span>
+      </header>
+      <div id="chat-body" class="chat-body">
+        <div class="cnone" style="margin:auto"><p>Tus mensajes y fotos son privados entre tú y tus amigos.</p></div>
+      </div>
+      <div id="chat-prev" class="chat-prev" hidden></div>
+      <form id="chat-form" class="chat-form" hidden>
+        <label class="btn glass sm photo-lbl" title="Enviar foto">
+          📷
+          <input type="file" id="chat-photo" accept="image/*" hidden>
+        </label>
+        <input id="chat-in" type="text" placeholder="Escribe un mensaje…" maxlength="1000" autocomplete="off">
+        <button type="submit" class="btn solid sm">Enviar</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="script.js"></script>
 <script src="auth.js"></script>
+<script src="social.js"></script>
 <script src="comunidad.js"></script>
 <script src="extras.js"></script>
 <script src="fx.js"></script>
