@@ -1,0 +1,151 @@
+/* URL donde se envía el formulario "Únete" (servidor propio, Formspree, etc.).
+   Mientras esté vacía, el formulario funciona pero NO envía nada. */
+const JOIN_ENDPOINT = "";
+
+/* Plataformas disponibles para los botones de descarga */
+const PLAT = {steam:"Steam",ps:"PlayStation Store",xbox:"Xbox",switch:"Nintendo Switch",epic:"Epic Games",ios:"App Store",android:"Google Play",pc:"Descargar para PC"};
+
+/* JUEGOS (al tocar una tarjeta se abre su ficha):
+   img = imagen principal, shots = más fotos, video = enlace de YouTube "https://www.youtube.com/embed/ID" o un .mp4,
+   info = descripción larga,
+   characters = personajes destacados de ese juego (n, r, img, data, story), links = botones de "Obtener juego" (sin enlaces sale "Próximamente"). */
+const games = [
+  {n:"Void Runner",g:"Acción",y:2024,p:"PC · Consola",d:"Corre por estructuras de cristal flotantes a una velocidad imposible.",a:"radial-gradient(circle at 70% 30%,#fff,transparent 45%),linear-gradient(135deg,#2a2a2e,#000)",
+   img:"img/void-runner.jpg", shots:["img/void-runner-1.jpg","img/void-runner-2.jpg"], video:"",
+   info:"Eres un corredor atrapado en una ciudad de cristal que flota sobre el vacío. Salta entre estructuras, esquiva los pulsos de luz y descubre quién apagó el sol. Controles precisos y 60 FPS estables.",
+   characters:[
+     {n:"Kael",r:"Corredor del vacío",img:"img/kael.jpg",data:{Altura:"1,82 m",Edad:"27 años",Origen:"Ciudad Prisma"},story:"Kael creció entre las torres de cristal de Prisma, cuando las estructuras todavía no flotaban. Aprendió a correr sobre el vacío para escapar de quienes controlan la luz."},
+     {n:"Nova",r:"Ingeniera de señales",img:"",data:{Altura:"1,68 m",Edad:"24 años",Origen:"Estación Lumen"},story:"Nova reparaba antenas en una estación olvidada hasta que recibió una señal que nadie más pudo oír."}
+   ],
+   links:{steam:"https://store.steampowered.com/",ps:"https://store.playstation.com/",xbox:"https://www.xbox.com/games"}},
+  {n:"Void Runner",g:"Acción",y:2024,p:"PC · Consola",d:"Corre por estructuras de cristal flotantes a una velocidad imposible.",a:"radial-gradient(circle at 70% 30%,#fff,transparent 45%),linear-gradient(135deg,#2a2a2e,#000)",
+   img:"",links:{}},
+];
+
+/* Esto es el equipo. Actualmente nadie.
+   Cuando tengas gente, agrégala con este formato:
+  {n:"Daniel Reyes",r:"Director creativo"},
+*/
+const team = [];
+
+/* Áreas donde puede postularse la gente */
+const roles = [
+  {n:"Programación",d:"Gameplay, motores y herramientas"},
+  {n:"Arte y animación",d:"2D, 3D, personajes y entornos"},
+  {n:"Diseño de juegos",d:"Mecánicas, niveles y narrativa"},
+  {n:"Sonido y música",d:"Efectos, banda sonora y mezcla"},
+  {n:"Producción y comunidad",d:"Planificación, redes y soporte"},
+  {n:"Otra área",d:"Cuéntanos qué sabes hacer"}
+];
+
+/* ===== Render ===== */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const plats = g => { const k = Object.keys(PLAT).filter(k => g.links[k]); return k.length ? k.map(k => `<a href="${esc(g.links[k])}" target="_blank" rel="noopener">${PLAT[k]}</a>`).join("") : `<span class="soon">Próximamente</span>`; };
+$("#grid").innerHTML = games.map((g,i)=>`<article class="glass game" id="g-${i}" data-g="${g.g}" tabindex="0" role="button" aria-label="Ver ${esc(g.n)}"><div class="art" style="background:${g.a}">${g.img?`<img src="${esc(g.img)}" alt="" loading="lazy" onerror="this.remove()">`:""}</div><div class="body"><h3>${esc(g.n)}</h3><p>${esc(g.d)}</p><div class="meta"><span>${g.g}</span><span>${g.y}</span><span>${esc(g.p)}</span></div></div></article>`).join("");
+$("#team").innerHTML = team.length ? team.map((m,i)=>`<div class="glass member" id="m-${i}"><div class="avatar">${m.n[0]}</div><h3>${esc(m.n)}</h3><p>${esc(m.r)}</p></div>`).join("") : `<div class="glass pad empty"><h3>Estamos armando el equipo</h3><p>Aún no hay perfiles publicados. ¿Quieres ser de los primeros?</p><a class="btn solid" href="#unete">Únete a Deytek!</a></div>`;
+$("#roles").innerHTML = roles.map(r=>`<li class="glass"><b>${esc(r.n)}</b><span>${esc(r.d)}</span></li>`).join("");
+$("#area").innerHTML = `<option value="" disabled selected>Elige un área</option>` + roles.map(r=>`<option>${esc(r.n)}</option>`).join("");
+
+/* Filtros por género */
+const genres = ["Todos", ...new Set(games.map(g=>g.g))];
+$("#filters").innerHTML = genres.map((g,i)=>`<button class="${i?"":"on"}">${g}</button>`).join("");
+function filter(g){
+  document.querySelectorAll("#filters button").forEach(b=>b.classList.toggle("on",b.textContent===g));
+  document.querySelectorAll(".game").forEach(c=>c.hidden = g!=="Todos" && c.dataset.g!==g);
+}
+$("#filters").onclick = e => e.target.tagName==="BUTTON" && filter(e.target.textContent);
+
+/* ===== Búsqueda global ===== */
+const index = [
+  ...games.map((g,i)=>({t:"Juego",n:g.n,h:"g-"+i,k:(g.n+g.g+g.d+g.p+Object.keys(g.links).map(k=>PLAT[k]).join(" "))})),
+  ...team.map((m,i)=>({t:"Equipo",n:m.n,h:"m-"+i,k:m.n+m.r})),
+  ...roles.map(r=>({t:"Vacante",n:r.n,h:"unete",k:r.n+r.d})),
+  ...games.flatMap((g,i)=>(g.characters||[]).map(c=>({t:"Personaje",n:c.n,h:"g-"+i,k:c.n+c.r+(c.story||"")}))),
+  ...[["Inicio","inicio"],["Juegos","juegos"],["Épicas historias de usuario","historias"],["Quiénes somos","nosotros"],["Equipo","equipo"],["Únete a Deytek","unete"]].map(([n,h])=>({t:"Sección",n,h,k:n}))
+];
+const q = $("#q"), box = $("#results");
+let hits = [], cur = 0;
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function show(){
+  const t = norm(q.value.trim());
+  if(!t){box.hidden = true; return;}
+  hits = index.filter(x=>norm(x.k).includes(t)).slice(0,7); cur = 0;
+  box.innerHTML = hits.length ? hits.map((h,i)=>`<li role="option" class="${i?"":"on"}" data-i="${i}"><span>${esc(h.n)}</span><small>${h.t}</small></li>`).join("") : `<li class="none">Sin resultados para «${esc(q.value)}»</li>`;
+  box.hidden = false;
+}
+function go(h){
+  box.hidden = true; q.blur();
+  const el = document.getElementById(h.h);
+  if(!el) return;
+  filter("Todos");
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+q.addEventListener("input", show);
+q.addEventListener("focus", show);
+q.addEventListener("keydown", e => {
+  const lis = box.querySelectorAll("li[data-i]");
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+    e.preventDefault(); if(!lis.length) return;
+    cur = (cur + (e.key==="ArrowDown"?1:-1) + lis.length) % lis.length;
+    lis.forEach((l,i)=>l.classList.toggle("on",i===cur));
+  } else if(e.key==="Enter" && hits[cur]){ go(hits[cur]); }
+  else if(e.key==="Escape"){ box.hidden = true; q.blur(); }
+});
+box.addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if(li) go(hits[+li.dataset.i]); });
+document.addEventListener("click", e => { if(!e.target.closest(".search")) box.hidden = true; });
+document.addEventListener("keydown", e => { if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); q.focus(); q.select(); } });
+
+/* ===== Brillo de vidrio que sigue al cursor ===== */
+document.addEventListener("pointermove", e => {
+  const g = e.target.closest(".glass");
+  if(g){ const r = g.getBoundingClientRect(); g.style.setProperty("--mx",(e.clientX-r.left)+"px"); g.style.setProperty("--my",(e.clientY-r.top)+"px"); }
+  const o = $(".orb");
+  o.style.setProperty("--ox",((e.clientX/innerWidth-.5)*40)+"px");
+  o.style.setProperty("--oy",((e.clientY/innerHeight-.5)*40)+"px");
+});
+
+/* ===== Formulario Únete: hoja de vida + verificación anti-bot ===== */
+const form = $("#form"), dlg = $("#verify"), track = $("#track"), knob = $("#knob"), fill = track.querySelector(".fill"), hint = $("#hint");
+const cv = $("#cv"), dn = $("#dropname"), st = $("#status"), DROP = "Adjunta tu hoja de vida";
+const cvError = () => { const f = cv.files[0]; if(!f) return DROP + "."; if(!/\.(pdf|docx?)$/i.test(f.name)) return "La hoja de vida debe ser PDF, DOC o DOCX."; if(f.size > 5*1048576) return "El archivo supera los 5 MB."; return ""; };
+cv.addEventListener("change", () => { const f = cv.files[0]; dn.textContent = f ? `${f.name} (${(f.size/1048576).toFixed(1)} MB)` : DROP; });
+form.addEventListener("reset", () => { dn.textContent = DROP; });
+
+let drag = false, startX = 0, pos = 0, verified = false;
+const maxPos = () => track.clientWidth - knob.offsetWidth - 8;
+function setPos(p){ pos = Math.max(0, Math.min(maxPos(), p)); knob.style.transform = `translateX(${pos}px)`; fill.style.width = (pos + 54) + "px"; }
+function resetTrack(){ verified = false; track.classList.remove("ok"); hint.textContent = "Desliza para verificar"; knob.style.transition = fill.style.transition = "none"; setPos(0); }
+function snapBack(){ knob.style.transition = "transform .4s var(--ease)"; fill.style.transition = "width .4s var(--ease)"; setPos(0); }
+function success(){
+  if(verified) return; verified = true;
+  track.classList.add("ok"); hint.textContent = "Verificado";
+  setTimeout(() => { dlg.close(); sendApplication(); }, 700);
+}
+async function sendApplication(){
+  if(!JOIN_ENDPOINT){ st.textContent = "Modo demostración: la solicitud no se envió porque aún no hay un servidor conectado."; return; }
+  try{
+    const r = await fetch(JOIN_ENDPOINT, {method:"POST", body:new FormData(form), headers:{Accept:"application/json"}});
+    if(!r.ok) throw new Error(r.status);
+    st.textContent = "¡Solicitud enviada! Gracias por querer unirte a Deytek."; form.reset();
+  }catch(err){ st.textContent = "No pudimos enviar tu solicitud. Inténtalo de nuevo."; }
+}
+knob.addEventListener("pointerdown", e => { drag = true; startX = e.clientX - pos; knob.setPointerCapture(e.pointerId); knob.style.transition = fill.style.transition = "none"; });
+knob.addEventListener("pointermove", e => { if(drag) setPos(e.clientX - startX); });
+const release = () => { if(!drag) return; drag = false; pos >= maxPos() - 2 ? success() : snapBack(); };
+knob.addEventListener("pointerup", release);
+knob.addEventListener("pointercancel", release);
+knob.addEventListener("keydown", e => {
+  if(e.key === "ArrowRight"){ setPos(pos + maxPos() / 4); if(pos >= maxPos() - 2) success(); }
+  if(e.key === "ArrowLeft") setPos(pos - maxPos() / 4);
+});
+$("#cancel").onclick = () => dlg.close();
+dlg.addEventListener("close", () => { if(!verified) resetTrack(); });
+form.addEventListener("submit", e => {
+  e.preventDefault(); st.textContent = "";
+  if(!window.deytekUser){ if(window.openAuth) window.openAuth(); return; }
+  if(form.elements.web.value){ form.reset(); return; } // trampa para bots
+  const err = cvError(); if(err){ st.textContent = err; return; }
+  resetTrack(); dlg.showModal();
+});

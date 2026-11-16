@@ -1,0 +1,3 @@
+Pon aquí las imágenes de tus juegos (JPG, PNG o WEBP, ideal 1280x720).
+Luego escribe la ruta en script.js, por ejemplo: img: "img/void-runner.jpg"
+Si no hay imagen, la tarjeta muestra un degradado.

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deytek Software</title>
+<meta name="description" content="Deytek Software: estudio de videojuegos independiente.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="nav glass">
+  <a class="logo" href="#inicio">Deytek</a>
+  <nav aria-label="Principal">
+    <a href="#juegos">Juegos</a><a href="#historias">Historias</a><a href="#nosotros">Nosotros</a><a href="#equipo">Equipo</a><a href="#unete">Únete</a>
+  </nav>
+  <div class="search">
+    <input id="q" type="search" placeholder="Buscar juegos, equipo, ayuda…" autocomplete="off" aria-label="Buscar">
+    <kbd>Ctrl K</kbd>
+    <ul id="results" class="glass" role="listbox" hidden></ul>
+  </div>
+  <button type="button" class="btn glass acct" id="acct">Entrar</button>
+</header>
+
+<main>
+  <section id="inicio" class="hero">
+    <div class="orb" aria-hidden="true"></div>
+    <p class="chip glass">Estudio independiente de videojuegos</p>
+    <h1>Juegos hechos<br>de luz y cristal.</h1>
+    <p class="lead">Deytek Software es un estudio independiente que diseña mundos silenciosos, fluidos y difíciles de soltar.</p>
+    <div class="actions">
+      <a class="btn solid" href="#juegos">Ver juegos</a>
+      <a class="btn glass" href="#unete">Únete al equipo</a>
+    </div>
+  </section>
+
+  <section id="juegos">
+    <h2>Nuestros juegos</h2>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="historias">
+    <h2>Épicas historias de usuario</h2>
+    <p class="csub">Cuéntanos lo que quieras: tu mejor partida, una idea o un problema. Todos pueden responder.</p>
+    <form id="cform" class="glass pad cform">
+      <div class="lock" id="clock"><p>Inicia sesión para comentar.</p><button type="button" class="btn solid" id="clockbtn">Entrar</button></div>
+      <fieldset id="cfs" disabled>
+        <div class="prow">
+          <label>Tema<select name="topic" required></select></label>
+          <label>Calificación<div class="stars" id="stars" role="group" aria-label="Calificación de 1 a 5"></div></label>
+        </div>
+        <label>Tu comentario<textarea name="text" rows="3" maxlength="600" required></textarea></label>
+        <button class="btn solid" type="submit" id="cbtn">Publicar</button>
+        <p id="cstat" role="status"></p>
+      </fieldset>
+    </form>
+    <div class="tw glass">
+      <table class="ptable">
+        <thead><tr><th>Usuario</th><th>Tema</th><th>Nota</th><th>Comentario</th><th>Me gusta</th><th>No me gusta</th><th>Respuestas</th></tr></thead>
+        <tbody id="ctb"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="nosotros">
+    <h2>Quiénes somos</h2>
+    <div class="about">
+      <p class="big">Somos un equipo pequeño que cree que un juego debe sentirse bien antes de explicarse. Cada detalle, de la cámara al sonido, se pule hasta que desaparece.</p>
+      <div class="values">
+        <div class="glass pad"><h3>Fluidez</h3><p>60 fotogramas estables y controles que responden al instante.</p></div>
+        <div class="glass pad"><h3>Claridad</h3><p>Interfaces limpias, sin ruido y sin tutoriales largos.</p></div>
+        <div class="glass pad"><h3>Cuidado</h3><p>Actualizamos nuestros juegos mucho después del lanzamiento.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="equipo">
+    <h2>El equipo</h2>
+    <div class="team" id="team"></div>
+  </section>
+
+  <section id="unete">
+    <h2>Únete a Deytek!</h2>
+    <div class="join">
+      <div>
+        <p>Buscamos gente que cuide los detalles. Cuéntanos quién eres y adjunta tu hoja de vida.</p>
+        <ul class="roles" id="roles"></ul>
+      </div>
+      <form id="form" class="glass pad">
+        <div class="lock" id="lock"><p>Inicia sesión para enviar tu postulación.</p><button type="button" class="btn solid" id="lockbtn">Entrar</button></div>
+        <fieldset id="fs" disabled>
+        <h3>Postúlate</h3>
+        <label class="hp" aria-hidden="true">No llenar<input name="web" tabindex="-1" autocomplete="off"></label>
+        <label>Nombre completo<input required name="nombre" autocomplete="name"></label>
+        <label>Correo<input required type="email" name="correo" autocomplete="email"></label>
+        <label>Área de interés<select required name="area" id="area"></select></label>
+        <label>Portafolio o enlace (opcional)<input type="url" name="enlace" placeholder="https://"></label>
+        <label>Cuéntanos sobre ti<textarea required rows="4" name="mensaje"></textarea></label>
+        <label class="drop"><input type="file" name="cv" id="cv" required accept=".pdf,.doc,.docx"><b id="dropname">Adjunta tu hoja de vida</b><small>PDF, DOC o DOCX · máx. 5 MB</small></label>
+        <button class="btn solid" type="submit">Enviar solicitud</button>
+        <p id="status" role="status"></p>
+      </fieldset>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Deytek Software</span>
+  <span><a href="#unete">Únete</a> · <a href="#">Privacidad</a> · <a href="#">Términos</a></span>
+<span class="tog"><span>Música</span><button type="button" role="switch" aria-checked="true" aria-label="Música de fondo" id="music" class="switch"><i></i></button></span>
+</footer>
+<dialog id="detail" aria-label="Detalle"><button type="button" class="x" id="dx" aria-label="Cerrar">×</button><div id="dc"></div></dialog>
+<dialog id="verify" aria-labelledby="vt">
+  <h3 id="vt">Verifica que eres humano</h3>
+  <p>Desliza hasta el final para enviar tu solicitud.</p>
+  <div class="track" id="track">
+    <span class="fill"></span>
+    <span class="hint" id="hint">Desliza para verificar</span>
+    <button type="button" class="knob" id="knob" aria-label="Deslizar para verificar. Usa la flecha derecha del teclado."></button>
+  </div>
+  <button type="button" class="btn glass" id="cancel">Cancelar</button>
+</dialog>
+<dialog id="auth" aria-labelledby="at">
+  <h3 id="at">Entra a Deytek</h3>
+  <button type="button" class="btn solid" id="google">Continuar con Google</button>
+  <p class="or">o con tu correo</p>
+  <form id="authform">
+    <input id="aname" name="name" placeholder="Nombre" autocomplete="name" maxlength="40" hidden>
+    <input id="aemail" name="email" type="email" placeholder="Correo" autocomplete="email" required>
+    <input id="apass" name="pass" type="password" placeholder="Contraseña (mín. 6)" minlength="6" autocomplete="current-password" required>
+    <button type="submit" class="btn solid" id="asubmit">Iniciar sesión</button>
+  </form>
+  <p class="sw"><span id="stxt">¿No tienes cuenta?</span> <button type="button" class="link" id="swap">Crear cuenta</button></p>
+  <button type="button" class="link" id="reset">Olvidé mi contraseña</button>
+  <p id="astatus" role="status"></p>
+  <button type="button" class="btn glass" id="aclose">Cerrar</button>
+</dialog>
+<dialog id="profile" aria-labelledby="pt">
+  <h3 id="pt">Tu perfil</h3>
+  <label class="pic"><img id="pimg" alt="Foto de perfil"><input type="file" id="pfile" accept="image/*"><span>Cambiar foto</span></label>
+  <input id="pname" placeholder="Nombre" maxlength="40" aria-label="Nombre">
+  <p id="pmail"></p>
+  <button type="button" class="btn solid" id="psave">Guardar cambios</button>
+  <button type="button" class="btn glass" id="pout">Cerrar sesión</button>
+  <button type="button" class="link" id="pclose">Cerrar</button>
+  <p id="pstatus" role="status"></p>
+</dialog>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="script.js"></script>
+<script src="auth.js"></script>
+<script src="comunidad.js"></script>
+<script src="extras.js"></script>
+<script src="fx.js"></script>
+</body>
+</html>
