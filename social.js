@@ -1,4 +1,4 @@
-/* Sistema de amigos y chat privado en tiempo real con envío de fotos */
+/* Sistema de amigos y chat privado en tiempo real con ID único y envío de fotos */
 (() => {
   const $ = s => document.querySelector(s);
   const ready = !!(window.FIREBASE_CONFIG && window.firebase && firebase.apps.length);
@@ -19,7 +19,6 @@
   const pairId = (a, b) => [a, b].sort().join("_");
   const timeFmt = t => t ? new Date(t).toLocaleTimeString("es", {hour:"2-digit", minute:"2-digit"}) : "";
 
-  /* Comprimir foto del chat (máx 720px para envío rápido y ligero en Firestore) */
   function compressChatPhoto(file){
     return new Promise((ok, no) => {
       const img = new Image(), url = URL.createObjectURL(file);
@@ -45,29 +44,29 @@
     if(usersCache[uid]) return usersCache[uid];
     try{
       const doc = await db.collection("users").doc(uid).get();
-      usersCache[uid] = doc.exists ? {uid, ...doc.data()} : {uid, name:"Jugador", email:"", photo:""};
+      usersCache[uid] = doc.exists ? {uid, ...doc.data()} : {uid, name:"Jugador", friendId:"", photo:""};
     }catch(e){
-      usersCache[uid] = {uid, name:"Jugador", email:"", photo:""};
+      usersCache[uid] = {uid, name:"Jugador", friendId:"", photo:""};
     }
     return usersCache[uid];
   }
 
-  /* Buscar y enviar solicitud de amistad */
+  /* Buscar por ID de amigo (DTK-XXXXX) o por nombre exacto */
   searchForm.onsubmit = async e => {
     e.preventDefault();
     statusEl.textContent = "";
     const me = window.deytekUser; if(!me) return;
-    const term = searchInput.value.trim();
-    if(!term) return;
+    const raw = searchInput.value.trim();
+    if(!raw) return;
 
     try{
-      // Busca por correo exacto o por nombre exacto
-      let snap = await db.collection("users").where("email", "==", term.toLowerCase()).limit(1).get();
+      const code = raw.toUpperCase().startsWith("DTK-") ? raw.toUpperCase() : `DTK-${raw.toUpperCase()}`;
+      let snap = await db.collection("users").where("friendId", "==", code).limit(1).get();
       if(snap.empty){
-        snap = await db.collection("users").where("name", "==", term).limit(1).get();
+        snap = await db.collection("users").where("name", "==", raw).limit(1).get();
       }
       if(snap.empty){
-        statusEl.textContent = "No se encontró ningún usuario con ese correo o nombre.";
+        statusEl.textContent = "No se encontró ningún usuario con ese ID o nombre.";
         return;
       }
       const target = snap.docs[0];
@@ -109,14 +108,13 @@
     badge.textContent = incoming.length;
     badge.hidden = incoming.length === 0;
 
-    // Solicitudes recibidas
     reqBox.hidden = incoming.length === 0;
     const reqItems = await Promise.all(incoming.map(async f => {
       const otherUid = f.users.find(u => u !== me.uid);
       const u = await getUserInfo(otherUid);
       return `<div class="fitem">
         <img src="${esc(u.photo || letter(u.name))}" alt="">
-        <div class="fmeta"><b>${esc(u.name)}</b><small>Quiere ser tu amigo</small></div>
+        <div class="fmeta"><b>${esc(u.name)}</b><small>${esc(u.friendId || "Solicitud")}</small></div>
         <div class="fbtns">
           <button type="button" class="btn solid sm" data-acc="${f.id}">✓</button>
           <button type="button" class="btn glass sm" data-rej="${f.id}">✕</button>
@@ -125,7 +123,6 @@
     }));
     reqList.innerHTML = reqItems.join("");
 
-    // Amigos aceptados
     if(!accepted.length){
       friendList.innerHTML = `<p class="cnone" style="padding:20px 0">Aún no tienes amigos agregados.</p>`;
       return;
@@ -136,7 +133,7 @@
       const isAct = activeFriend && activeFriend.uid === otherUid;
       return `<button type="button" class="fitem fbtn${isAct ? " on" : ""}" data-chat="${otherUid}">
         <img src="${esc(u.photo || letter(u.name))}" alt="">
-        <div class="fmeta"><b>${esc(u.name)}</b><small>${esc(u.email || "En línea")}</small></div>
+        <div class="fmeta"><b>${esc(u.name)}</b><small>${esc(u.friendId || "Jugador")}</small></div>
       </button>`;
     }));
     friendList.innerHTML = friendItems.join("");
@@ -149,7 +146,7 @@
     renderSidebar();
 
     chatHead.innerHTML = `<img src="${esc(activeFriend.photo || letter(activeFriend.name))}" alt="">
-      <div><b>${esc(activeFriend.name)}</b><small>${esc(activeFriend.email || "")}</small></div>
+      <div><b>${esc(activeFriend.name)}</b><small>${esc(activeFriend.friendId || "")}</small></div>
       <button type="button" class="btn glass sm" id="unfriend" title="Eliminar amigo" style="margin-left:auto">Eliminar</button>`;
 
     $("#unfriend").onclick = async () => {
@@ -193,7 +190,6 @@
     clearPendingPhoto();
   }
 
-  /* Eventos delegación en panel izquierdo */
   dlg.addEventListener("click", async e => {
     const acc = e.target.closest("[data-acc]");
     const rej = e.target.closest("[data-rej]");
@@ -211,7 +207,6 @@
     }
   });
 
-  /* Selección y vista previa de foto en el chat */
   function clearPendingPhoto(){
     pendingImg = "";
     chatPhoto.value = "";
@@ -232,7 +227,6 @@
     }
   };
 
-  /* Enviar mensaje (texto y/o foto) */
   chatForm.onsubmit = async e => {
     e.preventDefault();
     const me = window.deytekUser;
@@ -259,7 +253,6 @@
     }
   };
 
-  /* Abrir / cerrar ventana social */
   btnOpen.onclick = () => {
     if(!window.deytekUser){ if(window.openAuth) window.openAuth(); return; }
     dlg.showModal();
@@ -267,7 +260,6 @@
   closeBtn.onclick = () => dlg.close();
   dlg.addEventListener("click", e => { if(e.target === dlg) dlg.close(); });
 
-  /* Sincronizar con sesión */
   document.addEventListener("deytek:auth", () => {
     const u = window.deytekUser;
     if(unsubFriends){ unsubFriends(); unsubFriends = null; }

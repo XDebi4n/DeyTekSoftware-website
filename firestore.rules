@@ -7,13 +7,11 @@ service cloud.firestore {
           && b.toSet().difference(a.toSet()).hasOnly([request.auth.uid]);
     }
 
-    // Perfil público (incluye email en minúsculas para buscar amigos)
     match /users/{uid} {
       allow read: if true;
       allow write: if signed() && request.auth.uid == uid;
     }
 
-    // Límite de 1 comentario por minuto
     match /limits/{uid} {
       allow read: if signed() && request.auth.uid == uid;
       allow create: if signed() && request.auth.uid == uid && request.resource.data.last == request.time;
@@ -21,7 +19,6 @@ service cloud.firestore {
                     && request.time > resource.data.last + duration.value(60, 's');
     }
 
-    // Historias de usuario
     match /posts/{id} {
       allow read: if true;
       allow create: if signed()
@@ -53,9 +50,8 @@ service cloud.firestore {
       allow delete: if signed() && resource.data.uid == request.auth.uid;
     }
 
-    // === NUEVO: Amistades y solicitudes ===
     match /friendships/{id} {
-      allow read: if signed() && request.auth.uid in resource.data.users;
+      allow read: if signed() && (resource == null || request.auth.uid in resource.data.users);
       allow create: if signed()
         && request.resource.data.from == request.auth.uid
         && request.auth.uid in request.resource.data.users
@@ -67,7 +63,6 @@ service cloud.firestore {
       allow delete: if signed() && request.auth.uid in resource.data.users;
     }
 
-    // === NUEVO: Chats privados y mensajes ===
     match /chats/{chatId}/messages/{msgId} {
       allow read: if signed() && request.auth.uid in chatId.split('_');
       allow create: if signed()

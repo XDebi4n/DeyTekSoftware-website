@@ -149,6 +149,10 @@
   <h3 id="pt">Tu perfil</h3>
   <label class="pic"><img id="pimg" alt="Foto de perfil"><input type="file" id="pfile" accept="image/*"><span>Cambiar foto</span></label>
   <input id="pname" placeholder="Nombre" maxlength="40" aria-label="Nombre">
+  <div class="id-box" title="Comparte este ID para que te agreguen como amigo">
+    <span>Tu ID: <b id="pfriend-id">---</b></span>
+    <button type="button" class="btn glass sm" id="pcopy-id">Copiar</button>
+  </div>
   <p id="pmail"></p>
   <button type="button" class="btn solid" id="psave">Guardar cambios</button>
   <button type="button" class="btn glass" id="pout">Cerrar sesión</button>
@@ -162,7 +166,7 @@
     <aside class="social-side">
       <h3>Amigos</h3>
       <form id="fsearch" class="fsearch">
-        <input id="fquery" type="text" placeholder="Correo o nombre exacto…" required>
+        <input id="fquery" type="text" placeholder="ID de amigo (ej. DTK-12345)…" required>
         <button type="submit" class="btn solid sm" aria-label="Agregar">+</button>
       </form>
       <p id="fstatus" role="status"></p>

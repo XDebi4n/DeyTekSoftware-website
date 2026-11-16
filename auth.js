@@ -20,6 +20,17 @@
   const photoOf = u => profile.photo || u.photoURL || avatar(nameOf(u));
   const need = () => { if(!ready) throw {code:"need"}; };
 
+  /* Genera un ID único tipo DTK-48291 verificando que no exista */
+  async function generateUniqueFriendId(){
+    for(let i = 0; i < 8; i++){
+      const num = Math.floor(10000 + Math.random() * 90000);
+      const code = `DTK-${num}`;
+      const snap = await db.collection("users").where("friendId", "==", code).limit(1).get();
+      if(snap.empty) return code;
+    }
+    return `DTK-${Date.now().toString(36).slice(-5).toUpperCase()}`;
+  }
+
   function render(){
     acct.classList.toggle("has", !!user); acct.textContent = "";
     if(user){ const i = new Image(); i.alt = "Tu perfil"; i.src = photoOf(user); acct.append(i); acct.setAttribute("aria-label","Abrir tu perfil"); }
@@ -45,14 +56,15 @@
     try{
       const ref = db.collection("users").doc(u.uid);
       d = (await ref.get()).data() || {};
-      // Sincroniza nombre, correo y foto para que los amigos puedan encontrarlo
+      const friendId = d.friendId || await generateUniqueFriendId();
       const syncData = {
         name: d.name || u.displayName || (u.email || "").split("@")[0] || "Jugador",
-        email: (u.email || "").toLowerCase(),
-        photo: d.photo || u.photoURL || ""
+        photo: d.photo || u.photoURL || "",
+        friendId,
+        email: firebase.firestore.FieldValue.delete()
       };
       await ref.set(syncData, {merge:true});
-      d = {...d, ...syncData};
+      d = {...d, name: syncData.name, photo: syncData.photo, friendId};
     }catch(e){}
     if(n === seq){ profile = d; render(); }
   }
@@ -66,8 +78,19 @@
   }
   function openProfile(){
     newPhoto = ""; $("#pimg").src = photoOf(user); $("#pname").value = nameOf(user);
+    $("#pfriend-id").textContent = profile.friendId || "---";
     $("#pmail").textContent = user.email || ""; pstat.textContent = ""; P.showModal();
   }
+
+  $("#pcopy-id").onclick = async () => {
+    const id = profile.friendId; if(!id) return;
+    try{
+      await navigator.clipboard.writeText(id);
+      pstat.textContent = `ID ${id} copiado al portapapeles.`;
+    }catch(e){
+      pstat.textContent = `Tu ID es: ${id}`;
+    }
+  };
 
   acct.onclick = () => user ? openProfile() : (setMode(false), A.showModal());
   $("#swap").onclick = () => setMode(!signup);
@@ -84,8 +107,9 @@
       need(); const em = f.email.value.trim(), pw = f.pass.value;
       if(signup){
         const nm = f.name.value.trim().slice(0,40), c = await auth.createUserWithEmailAndPassword(em, pw);
+        const friendId = await generateUniqueFriendId();
         await c.user.updateProfile({displayName:nm});
-        await db.collection("users").doc(c.user.uid).set({name:nm, email:em.toLowerCase(), photo:""}, {merge:true});
+        await db.collection("users").doc(c.user.uid).set({name:nm, photo:"", friendId}, {merge:true});
         await load(c.user);
       } else await auth.signInWithEmailAndPassword(em, pw);
       f.reset();
@@ -102,7 +126,7 @@
     const nm = $("#pname").value.trim().slice(0,40); if(!nm) throw {code:"noname"};
     await user.updateProfile({displayName:nm});
     const photo = newPhoto || profile.photo || "";
-    await db.collection("users").doc(user.uid).set({name:nm, email:(user.email||"").toLowerCase(), photo}, {merge:true});
+    await db.collection("users").doc(user.uid).set({name:nm, photo}, {merge:true});
     profile = {...profile, name:nm, photo}; newPhoto = ""; render(); pstat.textContent = "Cambios guardados.";
   });
   $("#pout").onclick = async () => { if(ready) await auth.signOut(); P.close(); };
