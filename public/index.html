@@ -7,6 +7,7 @@
 <meta name="description" content="Deytek Software: estudio de videojuegos independiente.">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile.css">
 </head>
 <body>
 <div class="bg" id="bg" aria-hidden="true">
@@ -158,7 +159,8 @@
 
 <dialog id="profile" aria-labelledby="pt">
   <h3 id="pt">Tu perfil</h3>
-  <label class="pic"><img id="pimg" alt="Foto de perfil"><input type="file" id="pfile" accept="image/*"><span>Cambiar foto</span></label>
+  <!-- Se actualizó el accept para permitir GIFs animados -->
+  <label class="pic"><img id="pimg" alt="Foto de perfil"><input type="file" id="pfile" accept="image/png, image/jpeg, image/gif"><span>Cambiar foto</span></label>
   <input id="pname" placeholder="Nombre" maxlength="40" aria-label="Nombre">
   <div class="id-box" title="Comparte este ID para que te agreguen como amigo">
     <span>Tu ID: <b id="pfriend-id">---</b></span>
@@ -224,8 +226,10 @@
 <script src="script.js"></script>
 <script src="auth.js"></script>
 <script src="social.js"></script>
+<script src="call.js"></script>
 <script src="comunidad.js"></script>
 <script src="extras.js"></script>
 <script src="fx.js"></script>
 </body>
 </html>
+```[cite: 10]

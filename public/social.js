@@ -256,7 +256,7 @@ function resetChatArea(){
       statusEl.textContent = "No se pudo enviar el mensaje (la foto puede ser muy pesada).";
     }
   };
-
+  window.deytekResetChat = resetChatArea;
   btnOpen.onclick = () => {
     if(!window.deytekUser){ if(window.openAuth) window.openAuth(); return; }
     dlg.showModal();

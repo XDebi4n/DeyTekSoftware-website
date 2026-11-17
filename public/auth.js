@@ -115,13 +115,30 @@
       f.reset();
     });
   };
+
+  /* Manejo de archivos de perfil con soporte completo para GIFs animados */
   $("#pfile").onchange = async e => {
     const f = e.target.files[0]; if(!f) return;
     if(!f.type.startsWith("image/")){ pstat.textContent = "Elige un archivo de imagen."; return; }
-    try{ newPhoto = await resize(f); $("#pimg").src = newPhoto; pstat.textContent = ""; }
+    try{
+      if(f.type === "image/gif"){
+        const reader = new FileReader();
+        reader.onload = ev => {
+          newPhoto = ev.target.result;
+          $("#pimg").src = newPhoto;
+          pstat.textContent = "";
+        };
+        reader.readAsDataURL(f);
+      } else {
+        newPhoto = await resize(f);
+        $("#pimg").src = newPhoto;
+        pstat.textContent = "";
+      }
+    }
     catch(err){ pstat.textContent = "No se pudo leer esa imagen."; }
     e.target.value = "";
   };
+
   $("#psave").onclick = e => run(e.currentTarget, pstat, async () => {
     const nm = $("#pname").value.trim().slice(0,40); if(!nm) throw {code:"noname"};
     await user.updateProfile({displayName:nm});

@@ -10,16 +10,16 @@ const PLAT = {steam:"Steam",ps:"PlayStation Store",xbox:"Xbox",switch:"Nintendo 
    info = descripción larga,
    characters = personajes destacados de ese juego (n, r, img, data, story), links = botones de "Obtener juego" (sin enlaces sale "Próximamente"). */
 const games = [
-  {n:"Void Runner",g:"Acción",y:2024,p:"PC · Consola",d:"Corre por estructuras de cristal flotantes a una velocidad imposible.",a:"radial-gradient(circle at 70% 30%,#fff,transparent 45%),linear-gradient(135deg,#2a2a2e,#000)",
-   img:"img/void-runner.jpg", shots:["img/void-runner-1.jpg","img/void-runner-2.jpg"], video:"",
-   info:"Eres un corredor atrapado en una ciudad de cristal que flota sobre el vacío. Salta entre estructuras, esquiva los pulsos de luz y descubre quién apagó el sol. Controles precisos y 60 FPS estables.",
+  {n:"Hollow Jack 2024",g:"Terror",y:2024,p:"PC - Mobiles",d:"Encuentra la llave, abre una tapa de alcantarilla, despierta en un lugar, busca una palanca y acciónala, da comienzo al juego, repara 7 sistemas eléctricos y escapa..",a:"radial-gradient(circle at 70% 30%,#fff,transparent 45%),linear-gradient(135deg,#2a2a2e,#000)",
+   img:"img/hollow.png", shots:["img/hollowjackimg2.png", "img/hollowjackimg3.png", "img/hollowjackimg4.png"], video:"img/hollowjacktrailer.mp4",
+   info:"Encuentra la llave, abre una tapa de alcantarilla, despierta en un lugar, busca una palanca y acciónala, da comienzo al juego, repara 7 sistemas eléctricos y escapa.",
    characters:[
-     {n:"Kael",r:"Corredor del vacío",img:"img/kael.jpg",data:{Altura:"1,82 m",Edad:"27 años",Origen:"Ciudad Prisma"},story:"Kael creció entre las torres de cristal de Prisma, cuando las estructuras todavía no flotaban. Aprendió a correr sobre el vacío para escapar de quienes controlan la luz."},
-     {n:"Nova",r:"Ingeniera de señales",img:"",data:{Altura:"1,68 m",Edad:"24 años",Origen:"Estación Lumen"},story:"Nova reparaba antenas en una estación olvidada hasta que recibió una señal que nadie más pudo oír."}
+     {n:"Hollow Jack",r:"Sicario",img:"img/hollowjacki.png",data:{Altura:"1,85 m",Edad:"27 años",Origen:"Estado Unidense"},story:"Un niño al que se le privó de su libertad, convertido ya en hombre, busca el mal en este mundo."},
    ],
-   links:{steam:"https://store.steampowered.com/",ps:"https://store.playstation.com/",xbox:"https://www.xbox.com/games"}},
-  {n:"Void Runner",g:"Acción",y:2024,p:"PC · Consola",d:"Corre por estructuras de cristal flotantes a una velocidad imposible.",a:"radial-gradient(circle at 70% 30%,#fff,transparent 45%),linear-gradient(135deg,#2a2a2e,#000)",
-   img:"",links:{}},
+      //links:{steam:"https://store.steampowered.com/",ps:"https://store.playstation.com/",xbox:"https://www.xbox.com/games"}},
+
+      links:{playstore:"https://play.google.com/store/apps/details?id=com.XDebian.HollowJack&hl=es_HN",pc:"https://xdebian.itch.io/hollow-jack"}},
+
 ];
 
 /* Esto es el equipo. Actualmente nadie.

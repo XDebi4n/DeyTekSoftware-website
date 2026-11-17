@@ -73,5 +73,33 @@ service cloud.firestore {
         && request.resource.data.text.size() <= 1000
         && request.resource.data.img.size() <= 500000;
     }
+
+    /* Llamadas de voz: señalización WebRTC */
+    match /calls/{callId} {
+      allow read: if signed() && (resource == null
+                    || resource.data.to == request.auth.uid
+                    || resource.data.from == request.auth.uid);
+      allow create: if signed()
+        && request.auth.uid in callId.split('_')
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to in callId.split('_')
+        && request.resource.data.to != request.auth.uid
+        && request.resource.data.keys().hasOnly(['from','to','cid','status','offer','createdAt'])
+        && request.resource.data.status == 'ringing'
+        && get(/databases/$(database)/documents/friendships/$(callId)).data.status == 'accepted';
+      allow update: if signed()
+        && resource.data.to == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answer','status']);
+      allow delete: if signed()
+        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+
+      match /cand/{id} {
+        allow read: if signed() && request.auth.uid in callId.split('_');
+        allow create: if signed()
+          && request.auth.uid in callId.split('_')
+          && request.resource.data.uid == request.auth.uid;
+        allow delete: if signed() && resource.data.uid == request.auth.uid;
+      }
+    }
   }
 }
