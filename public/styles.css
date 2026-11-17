@@ -5,8 +5,10 @@ body{background:#000;color:var(--fg);font:400 17px/1.55 -apple-system,"SF Pro Di
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid #fff;outline-offset:3px}
 
-/* Fondo fluido */
+/* Fondo: video (img/fondo.mp4) con luces animadas de respaldo */
 .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#000}
+.bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.bg.has-video i{display:none}
 .bg i{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 26s ease-in-out infinite alternate}
 .bg i:nth-child(1){width:50vmax;height:50vmax;left:-14vmax;top:-12vmax;background:radial-gradient(circle,#fff,transparent 65%);opacity:.2}
 .bg i:nth-child(2){width:44vmax;height:44vmax;right:-12vmax;bottom:-10vmax;background:radial-gradient(circle,#a1a1aa,transparent 65%);opacity:.26;animation-delay:-9s}
@@ -21,7 +23,8 @@ a{color:inherit;text-decoration:none}
 
 /* Navegación */
 .nav{position:fixed;z-index:20;top:16px;left:50%;transform:translateX(-50%);width:min(1080px,calc(100% - 24px));display:flex;align-items:center;gap:20px;padding:10px 12px 10px 24px;border-radius:999px}
-.logo{font-weight:700;letter-spacing:-.02em;font-size:19px}
+.logo{font-weight:700;letter-spacing:-.02em;font-size:19px;display:flex;align-items:center}
+.logo img{display:block;height:28px;width:auto;object-fit:contain}
 .nav nav{display:flex;gap:22px;margin-left:8px;color:var(--mut);font-size:15px}
 .nav nav a{transition:color .25s}.nav nav a:hover{color:#fff}
 .search{position:relative;margin-left:auto;flex:0 1 300px}
@@ -125,7 +128,6 @@ dialog .btn{height:42px;margin-top:4px}
 .plats a{background:#fff;color:#000;transition:transform .3s var(--ease)}
 .plats a:hover{transform:scale(1.06)}
 .plats .soon{background:rgba(255,255,255,.1);color:var(--mut);font-weight:500}
-
 /* Únete */
 .join{display:grid;grid-template-columns:1fr 1.1fr;gap:24px;align-items:start}
 .join>div>p{margin-bottom:22px;font-size:19px}
@@ -160,8 +162,6 @@ dialog p[role=status]{min-height:1.3em;margin-top:10px;font-size:14px;color:#fff
 .pic img{width:100%;height:100%;object-fit:cover;display:block}
 .pic input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .pic span{position:absolute;left:0;right:0;bottom:0;padding:7px 0;font-size:12px;background:rgba(0,0,0,.55);pointer-events:none}
-.id-box{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:14px}
-.id-box b{color:#fff;letter-spacing:.04em}
 #pmail{margin-top:8px;font-size:14px}
 
 /* Animaciones */
@@ -174,7 +174,7 @@ dialog p[role=status]{min-height:1.3em;margin-top:10px;font-size:14px;color:#fff
 .nav{animation:down .9s var(--ease) both}
 @keyframes down{from{opacity:0;translate:0 -30px}}
 
-/* Tarjetas: crecen, brillo y reflejo */
+/* Tarjetas: crecen, brillo y reflejo (el reflejo funciona en Chrome, Edge y Safari) */
 .grid,.chars{row-gap:44px}
 .game,.char-card{cursor:pointer}
 .game:hover,.game:focus-visible,.char-card:hover,.char-card:focus-visible{transform:translateY(-8px) scale(1.07);z-index:3;-webkit-box-reflect:below 4px linear-gradient(transparent 80%,rgba(255,255,255,.3))}
@@ -214,7 +214,7 @@ dt{font-size:12px;color:var(--mut)}dd{margin:0;font-weight:600}
 @media(max-width:700px){.char{grid-template-columns:1fr}.cph.big{aspect-ratio:4/3;min-height:0}}
 
 /* Formulario bloqueado sin sesión + interruptor de música */
-fieldset{border:0;min-width:0}
+fieldset{border:0;min-width:0;padding:0;margin:0}
 .lock{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;border-radius:inherit;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .lock p{color:#fff;font-size:18px;font-weight:600}
 .tog{display:inline-flex;align-items:center;gap:10px}
@@ -271,24 +271,39 @@ fieldset{border:0;min-width:0}
 .cnone{color:var(--mut);text-align:center}
 @media(max-width:600px){.prow{grid-template-columns:1fr}}
 
-/* === Sistema de Amigos y Chat === */
+
+/* ===== Portada ===== */
+.hero-logo{width:120px;height:120px;object-fit:contain;margin-bottom:16px}
+
+/* ===== Menú móvil ===== */
+#menu-btn{display:none;height:42px;padding:0 14px;flex:none}
+@media(max-width:820px){
+  #menu-btn{display:inline-flex}
+  .nav{gap:10px;padding:10px 12px}
+  .nav.open nav{display:flex;flex-direction:column;gap:2px;position:absolute;top:calc(100% + 8px);left:0;right:0;padding:12px;border-radius:24px;text-align:center;color:#fff;background:rgba(18,18,20,.92);border:1px solid var(--line);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+  .nav.open nav a{padding:12px}
+  h1{font-size:clamp(36px,10vw,54px)}
+  .ptable{min-width:650px}
+}
+
+/* ===== Perfil: ID de amigo ===== */
+.id-box{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:14px}
+.id-box b{color:#fff;letter-spacing:.04em}
+
+/* ===== Amigos y chat ===== */
 .social-trigger{height:42px;padding:0 18px;font-size:15px;gap:8px;flex:none}
 .badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fff;color:#000;font-size:12px;font-weight:700}
-
 #social-dlg{width:min(920px,calc(100% - 24px));height:min(640px,86vh);padding:0;text-align:left;overflow:hidden}
 .social-wrap{display:grid;grid-template-columns:300px 1fr;height:100%}
 .social-side{display:flex;flex-direction:column;padding:22px 18px;border-right:1px solid var(--line);background:rgba(255,255,255,.03);overflow:hidden}
 .social-side h3{margin-bottom:12px}
-
 .fsearch{display:flex;gap:8px}
 .fsearch input{margin:0!important;padding:10px 14px!important;font-size:14px;border-radius:999px!important}
 .btn.sm{height:38px;padding:0 14px;font-size:14px;margin:0!important;width:auto!important;flex:none}
 #fstatus{font-size:13px;min-height:1.2em;margin:8px 0 4px;color:#fff}
-
 .sec-lbl{display:block;margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
 .flist{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
 #ffriend-list{flex:1}
-
 .fitem{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:16px;border:1px solid transparent;background:rgba(255,255,255,.04);color:#fff;text-align:left;font:inherit}
 .fbtn{cursor:pointer;transition:background .25s}
 .fbtn:hover,.fbtn.on{background:rgba(255,255,255,.15);border-color:var(--line)}
@@ -297,27 +312,27 @@ fieldset{border:0;min-width:0}
 .fmeta b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fmeta small{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fbtns{display:flex;gap:4px}
-
-.social-chat{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.social-chat{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
 .chat-head{display:flex;align-items:center;gap:12px;padding:16px 56px 16px 20px;border-bottom:1px solid var(--line);min-height:70px;font-weight:600}
 .chat-head small{display:block;font-weight:400;font-size:12px;color:var(--mut)}
-.chat-body{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-
+.chat-body{flex:1;min-height:0;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.welcome{margin:auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.welcome img{width:100%;max-width:280px;max-height:280px;object-fit:contain;border-radius:16px}
 .msg{max-width:74%;padding:10px 14px;border-radius:20px;font-size:15px;line-height:1.4;word-break:break-word;position:relative}
 .msg p{color:inherit;margin:0;white-space:pre-wrap}
 .msg small{display:block;font-size:11px;margin-top:4px;opacity:.65;text-align:right}
 .msg.mine{align-self:flex-end;background:#fff;color:#000;border-bottom-right-radius:6px}
 .msg.theirs{align-self:flex-start;background:rgba(255,255,255,.12);border:1px solid var(--line);color:#fff;border-bottom-left-radius:6px}
 .mimg{display:block;max-width:100%;max-height:260px;border-radius:14px;margin-bottom:6px;cursor:zoom-in}
-
 .chat-prev{position:relative;padding:10px 20px 0;display:flex;align-items:center}
 .chat-prev img{height:76px;border-radius:12px;border:1px solid var(--line)}
 .chat-prev button{margin-left:8px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.6);color:#fff;cursor:pointer}
-
 .chat-form{display:flex;align-items:center;gap:8px;padding:14px 18px;border-top:1px solid var(--line)}
 .chat-form input[type=text]{margin:0!important;padding:11px 16px!important;border-radius:999px!important;font-size:15px}
-.photo-lbl{padding:0 12px!important;font-size:18px}
-
+.photo-lbl{padding:0 12px!important;margin:0!important;cursor:pointer}
+.photo-lbl img{width:20px;height:20px;display:block}
+#lightbox{width:min(900px,calc(100% - 24px));padding:12px;background:rgba(0,0,0,.85)}
+#lightbox img{display:block;width:100%;max-height:82vh;object-fit:contain;border-radius:16px;cursor:zoom-out}
 @media(max-width:720px){
   .social-wrap{grid-template-columns:1fr;grid-template-rows:230px 1fr}
   .social-side{border-right:0;border-bottom:1px solid var(--line);padding:14px}

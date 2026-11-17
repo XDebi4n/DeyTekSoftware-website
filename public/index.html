@@ -5,15 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Deytek Software</title>
 <meta name="description" content="Deytek Software: estudio de videojuegos independiente.">
+<link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="bg" id="bg" aria-hidden="true">
+  <!-- Video de fondo: cambia el archivo img/fondo.mp4 por el tuyo (mejor si pesa menos de 8 MB) -->
+  <video id="bgvideo" autoplay muted loop playsinline preload="auto"><source src="img/fondo.mp4" type="video/mp4"></video>
+  <i></i><i></i><i></i>
+</div>
 
 <header class="nav glass">
+  <button type="button" class="btn glass" id="menu-btn" aria-label="Abrir menú" aria-expanded="false">☰</button>
   <a class="logo" href="#inicio">Deytek</a>
   <nav aria-label="Principal">
-    <a href="#juegos">Juegos</a><a href="#historias">Historias</a><a href="#nosotros">Nosotros</a><a href="#equipo">Equipo</a><a href="#unete">Únete</a>
+    <a href="#juegos">Juegos</a><a href="#historias">Foro</a><a href="#nosotros">Nosotros</a><a href="#equipo">Equipo</a><a href="#unete">Únete</a>
   </nav>
   <div class="search">
     <input id="q" type="search" placeholder="Buscar juegos, equipo, ayuda…" autocomplete="off" aria-label="Buscar">
@@ -28,13 +34,14 @@
 
 <main>
   <section id="inicio" class="hero">
-    <div class="orb" aria-hidden="true"></div>
-    <p class="chip glass">Estudio independiente de videojuegos</p>
-    <h1>Juegos hechos<br>de luz y cristal.</h1>
-    <p class="lead">Deytek Software es un estudio independiente que diseña mundos silenciosos, fluidos y difíciles de soltar.</p>
+    <img class="hero-logo" src="img/deytek.png" alt="DeyTek Logo">
+    
+    <p class="chip glass">DEYTEK</p>
+    <h1>Crea Tu Cuenta<br>Y JUEGA CON AMIGOS</h1>
+    <p class="lead">DeyTek es un ecosistema para tener mucha libertad de hablar y participar en foros de la comunidad. ¡También desarrollamos videojuegos!</p>
     <div class="actions">
       <a class="btn solid" href="#juegos">Ver juegos</a>
-      <a class="btn glass" href="#unete">Únete al equipo</a>
+      <a class="btn glass" onclick="if(window.openAuth) window.openAuth(); return false;" href="#">Crear cuenta</a>
     </div>
   </section>
 
@@ -45,8 +52,8 @@
   </section>
 
   <section id="historias">
-    <h2>Épicas historias de usuario</h2>
-    <p class="csub">Cuéntanos lo que quieras: tu mejor partida, una idea o un problema. Todos pueden responder.</p>
+    <h2>Foro de la comunidad</h2>
+    <p class="csub">Cuéntanos lo que quieras: tu mejor partida, una idea o un problema. Esto estara disponible para todo el mundo.</p>
     <form id="cform" class="glass pad cform">
       <div class="lock" id="clock"><p>Inicia sesión para comentar.</p><button type="button" class="btn solid" id="clockbtn">Entrar</button></div>
       <fieldset id="cfs" disabled>
@@ -85,10 +92,10 @@
   </section>
 
   <section id="unete">
-    <h2>Únete a Deytek!</h2>
+    <h2>Únete a DEYTEK!</h2>
     <div class="join">
       <div>
-        <p>Buscamos gente que cuide los detalles. Cuéntanos quién eres y adjunta tu hoja de vida.</p>
+        <p>Si quieres colaborar al proyecto puedes mandar tu solicitud!</p>
         <ul class="roles" id="roles"></ul>
       </div>
       <form id="form" class="glass pad">
@@ -111,7 +118,7 @@
 </main>
 
 <footer>
-  <span>© 2026 Deytek Software</span>
+  <span>Colombia © 2026 Deytek Software</span>
   <span><a href="#unete">Únete</a> · <a href="#">Privacidad</a> · <a href="#">Términos</a></span>
   <span class="tog"><span>Música</span><button type="button" role="switch" aria-checked="true" aria-label="Música de fondo" id="music" class="switch"><i></i></button></span>
 </footer>
@@ -185,12 +192,15 @@
         <span>Selecciona un amigo para chatear</span>
       </header>
       <div id="chat-body" class="chat-body">
-        <div class="cnone" style="margin:auto"><p>Tus mensajes y fotos son privados entre tú y tus amigos.</p></div>
+        <div class="welcome cnone">
+          <p>Tus mensajes y fotos son privados entre tú y tus amigos.</p>
+          <img src="img/deyteknoti.png" alt="Bienvenida">
+        </div>
       </div>
       <div id="chat-prev" class="chat-prev" hidden></div>
       <form id="chat-form" class="chat-form" hidden>
         <label class="btn glass sm photo-lbl" title="Enviar foto">
-          📷
+          <img src="img/gallery.png" alt="Subir foto">
           <input type="file" id="chat-photo" accept="image/*" hidden>
         </label>
         <input id="chat-in" type="text" placeholder="Escribe un mensaje…" maxlength="1000" autocomplete="off">
@@ -200,9 +210,12 @@
   </div>
 </dialog>
 
+<dialog id="lightbox" aria-label="Foto"><img id="lbimg" alt="Foto ampliada"></dialog>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="script.js"></script>
 <script src="auth.js"></script>

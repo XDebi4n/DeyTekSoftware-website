@@ -95,7 +95,7 @@
       statusEl.textContent = `¡Solicitud enviada a ${target.data().name || "usuario"}!`;
     }catch(err){
       console.error(err);
-      statusEl.textContent = "Error al buscar usuario. Revisa las reglas de Firebase.";
+      statusEl.textContent = "Error este usuario no existe.";
     }
   };
 
@@ -124,7 +124,7 @@
     reqList.innerHTML = reqItems.join("");
 
     if(!accepted.length){
-      friendList.innerHTML = `<p class="cnone" style="padding:20px 0">Aún no tienes amigos agregados.</p>`;
+      friendList.innerHTML = `<p class="cnone" style="padding:20px 0">Parece ser que eres solitario, busca una amistad!.</p>`;
       return;
     }
     const friendItems = await Promise.all(accepted.map(async f => {
@@ -165,7 +165,7 @@
       .orderBy("createdAt", "asc").limit(100)
       .onSnapshot(snap => {
         if(snap.empty){
-          chatBody.innerHTML = `<p class="cnone">Envía el primer mensaje o una foto a ${esc(activeFriend.name)}.</p>`;
+          chatBody.innerHTML = `<p class="cnone">Envía el primer mensaje de esta gran amistad! ${esc(activeFriend.name)}.</p>`;
           return;
         }
         chatBody.innerHTML = snap.docs.map(d => {
@@ -182,13 +182,17 @@
       });
   }
 
-  function resetChatArea(){
-    if(unsubChat){ unsubChat(); unsubChat = null; }
-    chatHead.innerHTML = `<span>Selecciona un amigo para chatear</span>`;
-    chatBody.innerHTML = `<div class="cnone" style="margin:auto"><p>Tus mensajes y fotos son privados entre tú y tus amigos.</p></div>`;
-    chatForm.hidden = true;
-    clearPendingPhoto();
-  }
+function resetChatArea(){
+  if(unsubChat){ unsubChat(); unsubChat = null; }
+  chatHead.innerHTML = `<span>Selecciona un amigo para chatear</span>`;
+  chatBody.innerHTML = `<div class="cnone" style="margin:auto; display:flex; flex-direction:column; align-items:center; gap:12px;">
+    <p>Ops! Buscate un amigo... </p>
+    <img src="img/deyteknoti.png" alt="Bienvenida" style="width: 520px; height: 520px; max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 16px;">
+     <p>Invita a mas amigos a la plataforma deyteksoftware.com</p>
+  </div>`;
+  chatForm.hidden = true;
+  clearPendingPhoto();
+}
 
   dlg.addEventListener("click", async e => {
     const acc = e.target.closest("[data-acc]");

@@ -149,3 +149,16 @@ form.addEventListener("submit", e => {
   const err = cvError(); if(err){ st.textContent = err; return; }
   resetTrack(); dlg.showModal();
 });
+
+
+const mBtn = document.querySelector("#menu-btn");
+const navLinks = document.querySelector(".nav nav");
+if(mBtn && navLinks){
+  mBtn.style.display = window.innerWidth <= 820 ? "inline-flex" : "none";
+  mBtn.onclick = () => {
+    navLinks.style.display = navLinks.style.display === "flex" ? "none" : "flex";
+    if(navLinks.style.display === "flex"){
+      navLinks.style.cssText = "display:flex; flex-direction:column; position:absolute; top:70px; left:0; right:0; background:rgba(18,18,20,0.95); padding:20px; border-radius:20px; text-align:center; backdrop-filter:blur(20px);";
+    }
+  };
+}
