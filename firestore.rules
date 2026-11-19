@@ -6,6 +6,16 @@ service cloud.firestore {
       return a.toSet().difference(b.toSet()).hasOnly([request.auth.uid])
           && b.toSet().difference(a.toSet()).hasOnly([request.auth.uid]);
     }
+    function pairKey(a, b) { return a < b ? a + '_' + b : b + '_' + a; }
+    function blockedBetween(a, b) {
+      return exists(/databases/$(database)/documents/blocks/$(a + '_' + b))
+          || exists(/databases/$(database)/documents/blocks/$(b + '_' + a));
+    }
+    function isMember(rid) {
+      return signed() && (
+        exists(/databases/$(database)/documents/invites/$(rid + '_' + request.auth.uid))
+        || get(/databases/$(database)/documents/rooms/$(rid)).data.host == request.auth.uid);
+    }
 
     match /users/{uid} {
       allow read: if true;
@@ -63,43 +73,83 @@ service cloud.firestore {
       allow delete: if signed() && request.auth.uid in resource.data.users;
     }
 
+    /* Bloqueos: el documento es "quienBloquea_aQuienBloquea" */
+    match /blocks/{bid} {
+      allow read: if signed() && request.auth.uid in bid.split('_');
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['by','target','createdAt'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.target != request.auth.uid
+        && bid == request.auth.uid + '_' + request.resource.data.target
+        && request.resource.data.createdAt == request.time;
+      allow delete: if signed() && resource.data.by == request.auth.uid;
+    }
+
+    /* Mensajes: texto, foto (base64), GIF o video (archivo en Storage) */
     match /chats/{chatId}/messages/{msgId} {
       allow read: if signed() && request.auth.uid in chatId.split('_');
       allow create: if signed()
         && request.auth.uid in chatId.split('_')
+        && get(/databases/$(database)/documents/friendships/$(chatId)).data.status == 'accepted'
+        && !blockedBetween(chatId.split('_')[0], chatId.split('_')[1])
+        && request.resource.data.keys().hasOnly(['uid','text','img','mkind','murl','mpath','createdAt'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.createdAt == request.time
-        && (request.resource.data.text.size() > 0 || request.resource.data.img.size() > 0)
-        && request.resource.data.text.size() <= 1000
-        && request.resource.data.img.size() <= 500000;
+        && request.resource.data.text is string && request.resource.data.text.size() <= 1000
+        && request.resource.data.img is string && request.resource.data.img.size() <= 500000
+        && request.resource.data.get('mkind', '') in ['', 'video', 'gif']
+        && request.resource.data.get('murl', '') is string
+        && request.resource.data.get('murl', '').size() <= 900
+        && (request.resource.data.get('murl', '') == '' || request.resource.data.get('murl', '').matches('https://firebasestorage.googleapis.com/.*'))
+        && request.resource.data.get('mpath', '').size() <= 300
+        && (request.resource.data.text.size() > 0 || request.resource.data.img.size() > 0 || request.resource.data.get('murl', '').size() > 0);
+      allow delete: if signed() && request.auth.uid in chatId.split('_') && resource.data.uid == request.auth.uid;
     }
 
-    /* Llamadas de voz: señalización WebRTC */
-    match /calls/{callId} {
-      allow read: if signed() && (resource == null
-                    || resource.data.to == request.auth.uid
-                    || resource.data.from == request.auth.uid);
+    /* Llamadas en grupo (WebRTC en malla; esto solo sirve de señalización) */
+    match /rooms/{rid} {
+      allow read: if signed() && (resource == null || isMember(rid));
       allow create: if signed()
-        && request.auth.uid in callId.split('_')
-        && request.resource.data.from == request.auth.uid
-        && request.resource.data.to in callId.split('_')
-        && request.resource.data.to != request.auth.uid
-        && request.resource.data.keys().hasOnly(['from','to','cid','status','offer','createdAt'])
-        && request.resource.data.status == 'ringing'
-        && get(/databases/$(database)/documents/friendships/$(callId)).data.status == 'accepted';
-      allow update: if signed()
-        && resource.data.to == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answer','status']);
-      allow delete: if signed()
-        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+        && request.resource.data.keys().hasOnly(['host','createdAt'])
+        && request.resource.data.host == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isMember(rid);
 
-      match /cand/{id} {
-        allow read: if signed() && request.auth.uid in callId.split('_');
-        allow create: if signed()
-          && request.auth.uid in callId.split('_')
-          && request.resource.data.uid == request.auth.uid;
-        allow delete: if signed() && resource.data.uid == request.auth.uid;
+      match /peers/{pid} {
+        allow read: if isMember(rid);
+        allow create, update: if isMember(rid) && pid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['joinedAt','ts']);
+        allow delete: if signed() && pid == request.auth.uid;
       }
+
+      match /signals/{sgid} {
+        allow read: if isMember(rid)
+          && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
+        allow create: if isMember(rid)
+          && request.resource.data.keys().hasOnly(['from','to','type','sid','data','createdAt'])
+          && request.resource.data.from == request.auth.uid
+          && request.resource.data.type in ['offer','answer','cand']
+          && request.resource.data.data is string && request.resource.data.data.size() < 30000
+          && request.resource.data.createdAt == request.time;
+        allow delete: if signed()
+          && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
+      }
+    }
+
+    match /invites/{iid} {
+      allow read: if signed() && (resource == null
+        || resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['roomId','from','to','createdAt'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to != request.auth.uid
+        && iid == request.resource.data.roomId + '_' + request.resource.data.to
+        && request.resource.data.createdAt == request.time
+        && isMember(request.resource.data.roomId)
+        && get(/databases/$(database)/documents/friendships/$(pairKey(request.auth.uid, request.resource.data.to))).data.status == 'accepted'
+        && !blockedBetween(request.auth.uid, request.resource.data.to);
+      allow delete: if signed()
+        && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
     }
   }
 }

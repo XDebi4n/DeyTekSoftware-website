@@ -18,36 +18,38 @@ const games = [
    ],
       //links:{steam:"https://store.steampowered.com/",ps:"https://store.playstation.com/",xbox:"https://www.xbox.com/games"}},
 
-      links:{playstore:"https://play.google.com/store/apps/details?id=com.XDebian.HollowJack&hl=es_HN",pc:"https://xdebian.itch.io/hollow-jack"}},
+      links:{android:"https://play.google.com/store/apps/details?id=com.XDebian.HollowJack&hl=es_HN",pc:"https://xdebian.itch.io/hollow-jack"}},
 
 ];
+const EMPTY_TEAM = `<div class="glass pad empty"><h3>Estamos armando el equipo</h3><p>Aún no hay perfiles publicados. ¿Quieres ser de los primeros?</p><a class="btn solid" href="#unete">Únete a Deytek!</a></div>`;
 
-/* Esto es el equipo. Actualmente nadie.
-   Cuando tengas gente, agrégala con este formato:
-  {n:"Daniel Reyes",r:"Director creativo"},
-*/
-const team = [];
-
-/* Áreas donde puede postularse la gente */
+/*todos los roles xd*/
 const roles = [
   {n:"Programación",d:"Gameplay, motores y herramientas"},
   {n:"Arte y animación",d:"2D, 3D, personajes y entornos"},
   {n:"Diseño de juegos",d:"Mecánicas, niveles y narrativa"},
   {n:"Sonido y música",d:"Efectos, banda sonora y mezcla"},
   {n:"Producción y comunidad",d:"Planificación, redes y soporte"},
-  {n:"Otra área",d:"Cuéntanos qué sabes hacer"}
+   {n:"Planificacion  de proyectos",d:"Agrupacion de juegos"},
+
 ];
 
-/* ===== Render ===== */
+const team = [
+
+  {id: "DTK-64091", r:"Chupador de penes"},
+]
+
+
+
 const $ = s => document.querySelector(s);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const plats = g => { const k = Object.keys(PLAT).filter(k => g.links[k]); return k.length ? k.map(k => `<a href="${esc(g.links[k])}" target="_blank" rel="noopener">${PLAT[k]}</a>`).join("") : `<span class="soon">Próximamente</span>`; };
 $("#grid").innerHTML = games.map((g,i)=>`<article class="glass game" id="g-${i}" data-g="${g.g}" tabindex="0" role="button" aria-label="Ver ${esc(g.n)}"><div class="art" style="background:${g.a}">${g.img?`<img src="${esc(g.img)}" alt="" loading="lazy" onerror="this.remove()">`:""}</div><div class="body"><h3>${esc(g.n)}</h3><p>${esc(g.d)}</p><div class="meta"><span>${g.g}</span><span>${g.y}</span><span>${esc(g.p)}</span></div></div></article>`).join("");
-$("#team").innerHTML = team.length ? team.map((m,i)=>`<div class="glass member" id="m-${i}"><div class="avatar">${m.n[0]}</div><h3>${esc(m.n)}</h3><p>${esc(m.r)}</p></div>`).join("") : `<div class="glass pad empty"><h3>Estamos armando el equipo</h3><p>Aún no hay perfiles publicados. ¿Quieres ser de los primeros?</p><a class="btn solid" href="#unete">Únete a Deytek!</a></div>`;
+$("#team").innerHTML = team.length ? '<p class="cnone">Cargando equipo…</p>' : EMPTY_TEAM;
 $("#roles").innerHTML = roles.map(r=>`<li class="glass"><b>${esc(r.n)}</b><span>${esc(r.d)}</span></li>`).join("");
 $("#area").innerHTML = `<option value="" disabled selected>Elige un área</option>` + roles.map(r=>`<option>${esc(r.n)}</option>`).join("");
 
-/* Filtros por género */
+
 const genres = ["Todos", ...new Set(games.map(g=>g.g))];
 $("#filters").innerHTML = genres.map((g,i)=>`<button class="${i?"":"on"}">${g}</button>`).join("");
 function filter(g){
@@ -56,10 +58,10 @@ function filter(g){
 }
 $("#filters").onclick = e => e.target.tagName==="BUTTON" && filter(e.target.textContent);
 
-/* ===== Búsqueda global ===== */
+/*Busqueda global*/
 const index = [
   ...games.map((g,i)=>({t:"Juego",n:g.n,h:"g-"+i,k:(g.n+g.g+g.d+g.p+Object.keys(g.links).map(k=>PLAT[k]).join(" "))})),
-  ...team.map((m,i)=>({t:"Equipo",n:m.n,h:"m-"+i,k:m.n+m.r})),
+  ...team.map((m,i)=>({t:"Equipo",get n(){return m.name||m.r},h:"m-"+i,get k(){return (m.name||"")+" "+m.r}})),
   ...roles.map(r=>({t:"Vacante",n:r.n,h:"unete",k:r.n+r.d})),
   ...games.flatMap((g,i)=>(g.characters||[]).map(c=>({t:"Personaje",n:c.n,h:"g-"+i,k:c.n+c.r+(c.story||"")}))),
   ...[["Inicio","inicio"],["Juegos","juegos"],["Épicas historias de usuario","historias"],["Quiénes somos","nosotros"],["Equipo","equipo"],["Únete a Deytek","unete"]].map(([n,h])=>({t:"Sección",n,h,k:n}))
