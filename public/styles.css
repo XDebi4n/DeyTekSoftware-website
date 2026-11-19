@@ -337,3 +337,24 @@ fieldset{border:0;min-width:0;padding:0;margin:0}
   .social-wrap{grid-template-columns:1fr;grid-template-rows:230px 1fr}
   .social-side{border-right:0;border-bottom:1px solid var(--line);padding:14px}
 }
+/* Asegura que cada tarjeta sea una columna flexible */
+.values > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empuja la imagen siempre hacia el borde inferior */
+.values img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-top: auto; /* Reemplaza margin-top: 18px */
+  border: 1px solid var(--line);
+}
+
+/* Opcional: asegura un espacio mínimo entre el texto y la imagen */
+.values p {
+  margin-bottom: 18px;
+}
