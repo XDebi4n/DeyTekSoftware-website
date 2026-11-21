@@ -34,6 +34,10 @@
   <button type="button" class="btn glass social-trigger" id="social-btn" hidden>
     Amigos <span class="badge" id="sbadge" hidden>0</span>
   </button>
+  <!-- Solo lo ven las cuentas admin (ADMIN_IDS en script.js) -->
+  <button type="button" class="btn glass social-trigger" id="req-btn" hidden>
+    Solicitudes <span class="badge" id="rbadge" hidden>0</span>
+  </button>
   <button type="button" class="btn glass acct" id="acct">Entrar</button>
 </header>
 
@@ -112,9 +116,9 @@
         <label>Nombre completo<input required name="nombre" autocomplete="name"></label>
         <label>Correo<input required type="email" name="correo" autocomplete="email"></label>
         <label>Área de interés<select required name="area" id="area"></select></label>
-        <label>Portafolio o enlace (opcional)<input type="url" name="enlace" placeholder="https://"></label>
+        <label>Portafolio o enlace (opcional)<input type="url" name="enlace" maxlength="300" placeholder="https://"></label>
         <label>Cuéntanos sobre ti<textarea required rows="4" name="mensaje"></textarea></label>
-        <label class="drop"><input type="file" name="cv" id="cv" required accept=".pdf,.doc,.docx"><b id="dropname">Adjunta tu hoja de vida</b><small>PDF, DOC o DOCX · máx. 5 MB</small></label>
+        <label>Enlace a tu hoja de vida (Drive, Dropbox, Notion…)<input type="url" name="cvlink" required maxlength="300" placeholder="https://"></label>
         <button class="btn solid" type="submit">Enviar solicitud</button>
         <p id="status" role="status"></p>
       </fieldset>
@@ -219,6 +223,13 @@
 
 <dialog id="lightbox" aria-label="Foto"><img id="lbimg" alt="Foto ampliada"></dialog>
 
+<!-- Panel de solicitudes recibidas (solo admins) -->
+<dialog id="req-dlg" aria-label="Solicitudes">
+  <button type="button" class="x" id="req-x" aria-label="Cerrar">×</button>
+  <h3>Solicitudes recibidas</h3>
+  <div id="req-list" class="req-list"></div>
+</dialog>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -229,10 +240,9 @@
 <script src="social.js"></script>
 <script src="call.js"></script>
 <script src="comunidad.js"></script>
+<script src="solicitudes.js"></script>
 <script src="extras.js"></script>
 <script src="equipo.js"></script>
 <!--<script src="fx.js"></script>-->
 </body>
 </html>
-
-<!--pene ;3-->

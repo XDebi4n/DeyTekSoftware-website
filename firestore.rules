@@ -2,6 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signed() { return request.auth != null; }
+
+    /* Admins: pega aquí el UID (no el DTK-xxxxx) de cada cuenta admin.
+       Firebase Console > Authentication > Users > "UID de usuario" */
+    function isAdmin() {
+      return signed() && request.auth.uid in ["GU3mTrqd8PheN2Mn2Eb797hjasq2"];
+    }
+
     function onlyMine(a, b) {
       return a.toSet().difference(b.toSet()).hasOnly([request.auth.uid])
           && b.toSet().difference(a.toSet()).hasOnly([request.auth.uid]);
@@ -20,6 +27,24 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if true;
       allow write: if signed() && request.auth.uid == uid;
+    }
+
+    /* Solicitudes del formulario "Únete": cualquiera con sesión puede enviar,
+       pero solo los admins pueden leer, marcar o borrar */
+    match /applications/{id} {
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['uid','nombre','correo','area','enlace','mensaje','cvPath','cvName','seen','createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.nombre is string && request.resource.data.nombre.size() > 0 && request.resource.data.nombre.size() <= 80
+        && request.resource.data.correo is string && request.resource.data.correo.size() > 0 && request.resource.data.correo.size() <= 120
+        && request.resource.data.area is string && request.resource.data.area.size() > 0 && request.resource.data.area.size() <= 60
+        && request.resource.data.enlace is string && request.resource.data.enlace.size() <= 300
+        && request.resource.data.mensaje is string && request.resource.data.mensaje.size() > 0 && request.resource.data.mensaje.size() <= 2000
+        && request.resource.data.cvPath is string && request.resource.data.cvPath.size() <= 300
+        && request.resource.data.cvName is string && request.resource.data.cvName.size() <= 120
+        && request.resource.data.seen == false
+        && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isAdmin();
     }
 
     match /limits/{uid} {

@@ -1,5 +1,8 @@
-/* URL donde se envía el formulario "Únete" (servidor propio, Formspree, etc.).
-   Mientras esté vacía, el formulario funciona pero NO envía nada. */
+/* IDs de amigo (DTK-xxxxx) de las cuentas admin: ven el botón "Solicitudes".
+   Debe ser EXACTAMENTE la que sale en tu perfil ("Tu ID"). */
+const ADMIN_IDS = ["DTK-73081"];
+
+/* Ya no se usa: las solicitudes del formulario "Únete" se guardan en Firestore (ver sendApplication). */
 const JOIN_ENDPOINT = "";
 
 /* Plataformas disponibles para los botones de descarga */
@@ -104,16 +107,15 @@ document.addEventListener("pointermove", e => {
   const g = e.target.closest(".glass");
   if(g){ const r = g.getBoundingClientRect(); g.style.setProperty("--mx",(e.clientX-r.left)+"px"); g.style.setProperty("--my",(e.clientY-r.top)+"px"); }
   const o = $(".orb");
-  o.style.setProperty("--ox",((e.clientX/innerWidth-.5)*40)+"px");
-  o.style.setProperty("--oy",((e.clientY/innerHeight-.5)*40)+"px");
+  if(o){
+    o.style.setProperty("--ox",((e.clientX/innerWidth-.5)*40)+"px");
+    o.style.setProperty("--oy",((e.clientY/innerHeight-.5)*40)+"px");
+  }
 });
 
 /* ===== Formulario Únete: hoja de vida + verificación anti-bot ===== */
 const form = $("#form"), dlg = $("#verify"), track = $("#track"), knob = $("#knob"), fill = track.querySelector(".fill"), hint = $("#hint");
-const cv = $("#cv"), dn = $("#dropname"), st = $("#status"), DROP = "Adjunta tu hoja de vida";
-const cvError = () => { const f = cv.files[0]; if(!f) return DROP + "."; if(!/\.(pdf|docx?)$/i.test(f.name)) return "La hoja de vida debe ser PDF, DOC o DOCX."; if(f.size > 5*1048576) return "El archivo supera los 5 MB."; return ""; };
-cv.addEventListener("change", () => { const f = cv.files[0]; dn.textContent = f ? `${f.name} (${(f.size/1048576).toFixed(1)} MB)` : DROP; });
-form.addEventListener("reset", () => { dn.textContent = DROP; });
+const st = $("#status");
 
 let drag = false, startX = 0, pos = 0, verified = false;
 const maxPos = () => track.clientWidth - knob.offsetWidth - 8;
@@ -125,13 +127,37 @@ function success(){
   track.classList.add("ok"); hint.textContent = "Verificado";
   setTimeout(() => { dlg.close(); sendApplication(); }, 700);
 }
+
+/* Guarda la solicitud en Firestore (la hoja de vida va como enlace, sin Storage).
+   Solo las cuentas admin (ADMIN_IDS + reglas) pueden leerla en el panel "Solicitudes". */
+
 async function sendApplication(){
-  if(!JOIN_ENDPOINT){ st.textContent = "Modo demostración: la solicitud no se envió porque aún no hay un servidor conectado."; return; }
+  const u = window.deytekUser;
+  if(!u || !window.firebase || !firebase.apps.length){ st.textContent = "Falta conectar Firebase."; return; }
+  st.textContent = "Enviando…";
   try{
-    const r = await fetch(JOIN_ENDPOINT, {method:"POST", body:new FormData(form), headers:{Accept:"application/json"}});
-    if(!r.ok) throw new Error(r.status);
-    st.textContent = "¡Solicitud enviada! Gracias por querer unirte a Deytek."; form.reset();
-  }catch(err){ st.textContent = "No pudimos enviar tu solicitud. Inténtalo de nuevo."; }
+    const el = form.elements;
+    /* Solo Firestore (sin Storage). Los largos coinciden con los límites de firestore.rules. */
+    await firebase.firestore().collection("applications").add({
+      uid: u.uid,
+      nombre: el.nombre.value.trim().slice(0, 80),
+      correo: el.correo.value.trim().slice(0, 120),
+      area: el.area.value.slice(0, 60),
+      enlace: el.enlace.value.trim().slice(0, 300),
+      mensaje: el.mensaje.value.trim().slice(0, 2000),
+      cvPath: el.cvlink.value.trim().slice(0, 300),
+      cvName: "Enlace",
+      seen: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    st.textContent = "¡Solicitud enviada con éxito!";
+    form.reset();
+  }catch(err){
+    console.error("[solicitud]", err);
+    st.textContent = err.code === "permission-denied"
+      ? "No se pudo enviar: faltan publicar las reglas de Firestore (permission-denied)."
+      : "No pudimos enviar tu solicitud. Inténtalo de nuevo." + (err.code ? " (" + err.code + ")" : "");
+  }
 }
 knob.addEventListener("pointerdown", e => { drag = true; startX = e.clientX - pos; knob.setPointerCapture(e.pointerId); knob.style.transition = fill.style.transition = "none"; });
 knob.addEventListener("pointermove", e => { if(drag) setPos(e.clientX - startX); });
@@ -148,7 +174,7 @@ form.addEventListener("submit", e => {
   e.preventDefault(); st.textContent = "";
   if(!window.deytekUser){ if(window.openAuth) window.openAuth(); return; }
   if(form.elements.web.value){ form.reset(); return; } // trampa para bots
-  const err = cvError(); if(err){ st.textContent = err; return; }
+  const link = form.elements.cvlink.value.trim(); if(!/^https?:\/\//i.test(link)){ st.textContent = "Pon un enlace válido a tu hoja de vida (debe empezar con https://)."; return; }
   resetTrack(); dlg.showModal();
 });
 

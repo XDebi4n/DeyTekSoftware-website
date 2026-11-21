@@ -32,6 +32,7 @@
   }
 
   function render(){
+    window.deytekProfile = profile;
     acct.classList.toggle("has", !!user); acct.textContent = "";
     if(user){ const i = new Image(); i.alt = "Tu perfil"; i.src = photoOf(user); acct.append(i); acct.setAttribute("aria-label","Abrir tu perfil"); }
     else { acct.textContent = "Entrar"; acct.removeAttribute("aria-label"); }
