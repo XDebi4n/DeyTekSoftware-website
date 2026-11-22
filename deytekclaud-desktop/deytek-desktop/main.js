@@ -8,15 +8,14 @@ const path = require("path");
 
 const PORT = 47321; // fijo: la sesión de Firebase se guarda por origen (incluye el puerto)
 const ROOT = path.join(__dirname, "app");
-const ICON = path.join(ROOT, "img", "deytekclaud.png");
+const ICON = path.join(ROOT, "img", "favicon.png");
 const TITLE = "DeyTek Claud";
 const MIME = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".svg": "image/svg+xml",
-    ".webp": "image/webp", ".mp4": "video/mp4", ".json": "application/json", ".ico": "image/x-icon",
+  ".webp": "image/webp", ".mp4": "video/mp4", ".json": "application/json", ".ico": "image/x-icon",
   ".mp3": "audio/mpeg", ".wav": "audio/wav", ".ogg": "audio/ogg"
 };
-
 
 /* Que los sonidos (sirena, mensajes) suenen sin que el usuario haya hecho clic */
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
@@ -33,7 +32,7 @@ function startServer(){
       if(!file.startsWith(ROOT)){ res.writeHead(403); return res.end(); }
       fs.readFile(file, (err, data) => {
         if(err){ res.writeHead(404); return res.end("No encontrado"); }
-               /* no-store: así siempre ves los cambios que hagas en app/ sin que quede nada en caché */
+        /* no-store: así siempre ves los cambios que hagas en app/ sin que quede nada en caché */
         res.writeHead(200, {"Content-Type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream", "Cache-Control": "no-store"});
         res.end(data);
       });
@@ -57,7 +56,7 @@ function createWindow(){
   const hasIcon = fs.existsSync(ICON);
   win = new BrowserWindow({
     width: 1100, height: 720, minWidth: 420, minHeight: 520,
-    backgroundColor: "#000000", autoHideMenuBar: true, title: TITLE,
+    backgroundColor: "#000000", frame: false, title: TITLE, // frame:false = sin la barra de Windows (botones propios en index.html)
     icon: hasIcon ? ICON : undefined,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -72,6 +71,8 @@ function createWindow(){
     return { action: "deny" };
   });
   win.on("focus", () => win.flashFrame(false));
+  const sendMax = () => { if(win && !win.isDestroyed()) win.webContents.send("win-max", win.isMaximized()); };
+  win.on("maximize", sendMax); win.on("unmaximize", sendMax);
   win.on("close", e => {
     if(!quitting && tray){ e.preventDefault(); win.hide(); }
   });
@@ -111,6 +112,14 @@ ipcMain.on("ringing", (_e, o) => {
     showWindow(); win.moveTop(); win.flashFrame(true);
     popup("Llamada entrante", `${String(o.name || "Alguien").slice(0, 60)} te está llamando`);
   }else win.flashFrame(false);
+});
+
+/* Botones de ventana propios: minimizar / maximizar / cerrar */
+ipcMain.on("win", (_e, a) => {
+  if(!win) return;
+  if(a === "min") win.minimize();
+  else if(a === "max") win.isMaximized() ? win.unmaximize() : win.maximize();
+  else if(a === "close") win.close(); // si hay icono en la bandeja, el evento "close" solo la oculta
 });
 
 ipcMain.on("unread", (_e, n) => { try{ app.setBadgeCount(Math.max(0, +n || 0)); }catch(e){} });

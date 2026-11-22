@@ -35,3 +35,13 @@ body{overflow:hidden}
     linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),  /* capa oscura para que se lea el texto */
     url("img/fondo.gif") center / cover no-repeat;
 }
+
+/* ===== Barra de título propia ===== */
+.topbar{-webkit-app-region:drag;user-select:none}
+.topbar button,.topbar .wc{-webkit-app-region:no-drag}
+.wc{display:flex;align-items:center;gap:8px;margin-left:4px}
+.wbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;transition:background .2s,border-color .2s}
+.wbtn svg{width:14px;height:14px}
+.wbtn:hover{background:rgba(255,255,255,.2)}
+.wbtn.close:hover{background:#ff453a;border-color:#ff453a}
+.wbtn:not(.is-max) .i-rs,.wbtn.is-max .i-sq{display:none}

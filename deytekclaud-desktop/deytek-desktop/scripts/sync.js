@@ -25,7 +25,8 @@ if(!fs.existsSync(SRC)){
 }
 
 const FILES = ["auth.js", "social.js", "call.js", "styles.css", "mobile.css", "firebase-config.js"];
-const IMGS = ["deytekclaud.png", "deytek.png", "deytekclaud.png", "deyteknoti.png", "gallery.png", "bloqueado.png"];
+const IMGS = ["favicon.png", "deytek.png", "deyteknoti.png", "gallery.png", "bloqueado.png"];
+const IMGS_ONCE = ["deytekclaud.png"]; // solo se copia si no existe en app/img (así tu versión de escritorio no se pisa)
 fs.mkdirSync(path.join(DST, "img"), { recursive: true });
 
 for(const f of FILES){
@@ -41,9 +42,10 @@ for(const f of FILES){
   
   fs.writeFileSync(path.join(DST, f), txt);
 }
-for(const f of IMGS){
-  const from = path.join(SRC, "img", f);
-  if(fs.existsSync(from)) fs.copyFileSync(from, path.join(DST, "img", f));
+for(const f of [...IMGS, ...IMGS_ONCE]){
+  const from = path.join(SRC, "img", f), to = path.join(DST, "img", f);
+  if(IMGS_ONCE.includes(f) && fs.existsSync(to)) continue; // ya hay una de escritorio: no se toca
+  if(fs.existsSync(from)) fs.copyFileSync(from, to);
   else console.warn(`[sync] Falta img/${f}`);
 }
 console.log(`[sync] Listo desde ${SRC}`);

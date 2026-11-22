@@ -199,6 +199,14 @@
     chatUn.forEach(f => { try{ f(); }catch(e){} }); chatUn.clear();
     firstF = true; unread = 0; paintUnread();
   }
+    /* ---------- Botones de ventana (barra personalizada) ---------- */
+  const wc = $("#wc"), wmax = $("#w-max");
+  if(D.win && wc){
+    $("#w-min").onclick = () => D.win("min");
+    wmax.onclick = () => D.win("max");
+    $("#w-close").onclick = () => D.win("close");
+    if(D.onMax) D.onMax(m => { wmax.classList.toggle("is-max", m); wmax.title = m ? "Restaurar" : "Maximizar"; wmax.setAttribute("aria-label", wmax.title); });
+  }else if(wc) wc.hidden = true; // en un navegador normal no hay ventana que controlar
 
   /* ---------- Sesión ---------- */
   const wbtn = $("#welcome-btn");
