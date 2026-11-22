@@ -8,13 +8,15 @@ const path = require("path");
 
 const PORT = 47321; // fijo: la sesión de Firebase se guarda por origen (incluye el puerto)
 const ROOT = path.join(__dirname, "app");
-const ICON = path.join(ROOT, "img", "favicon.png");
+const ICON = path.join(ROOT, "img", "deytekclaud.png");
 const TITLE = "DeyTek Claud";
 const MIME = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".svg": "image/svg+xml",
-  ".webp": "image/webp", ".mp4": "video/mp4", ".json": "application/json", ".ico": "image/x-icon"
+    ".webp": "image/webp", ".mp4": "video/mp4", ".json": "application/json", ".ico": "image/x-icon",
+  ".mp3": "audio/mpeg", ".wav": "audio/wav", ".ogg": "audio/ogg"
 };
+
 
 /* Que los sonidos (sirena, mensajes) suenen sin que el usuario haya hecho clic */
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
@@ -31,7 +33,8 @@ function startServer(){
       if(!file.startsWith(ROOT)){ res.writeHead(403); return res.end(); }
       fs.readFile(file, (err, data) => {
         if(err){ res.writeHead(404); return res.end("No encontrado"); }
-        res.writeHead(200, {"Content-Type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream"});
+               /* no-store: así siempre ves los cambios que hagas en app/ sin que quede nada en caché */
+        res.writeHead(200, {"Content-Type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream", "Cache-Control": "no-store"});
         res.end(data);
       });
     });

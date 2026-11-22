@@ -25,8 +25,7 @@ if(!fs.existsSync(SRC)){
 }
 
 const FILES = ["auth.js", "social.js", "call.js", "styles.css", "mobile.css", "firebase-config.js"];
-const IMGS = ["favicon.png", "deytek.png", "deyteknoti.png", "gallery.png", "bloqueado.png", "logo512.png"];
-
+const IMGS = ["deytekclaud.png", "deytek.png", "deytekclaud.png", "deyteknoti.png", "gallery.png", "bloqueado.png"];
 fs.mkdirSync(path.join(DST, "img"), { recursive: true });
 
 for(const f of FILES){
@@ -39,6 +38,7 @@ for(const f of FILES){
     if(txt.includes(marker)) txt = txt.replace(marker, marker + " if(window.deytekRing){ window.deytekRing(on); return; }");
     else console.warn("[sync] No encontré ring() en call.js; sonará el pitido normal.");
   }
+  
   fs.writeFileSync(path.join(DST, f), txt);
 }
 for(const f of IMGS){

@@ -6,6 +6,8 @@ body{overflow:hidden}
 .tlogo{height:26px;width:auto;display:block;object-fit:contain}
 .ttitle{font-weight:700;letter-spacing:-.02em;margin-right:auto}
 .topbar .acct{height:40px}
+/* Sin sesión el botón "Entrar" de arriba no se ve (se entra con el botón de abajo) */
+#acct:not(.has){display:none}
 #social-btn{display:none!important}
 
 /* La pantalla de amigos y chat ocupa toda la ventana (no es un modal) */
@@ -17,8 +19,19 @@ body{overflow:hidden}
 }
 #sclose{display:none}
 
-.welcome-screen{position:fixed;inset:56px 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+/* Pantalla de bienvenida: contenido al centro y botón "Iniciar sesión" abajo en el medio */
+.welcome-screen{position:fixed;inset:56px 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px 24px 110px}
 .welcome-screen img{width:100%;max-width:240px;max-height:240px;object-fit:contain;border-radius:16px}
 .welcome-screen h1{font-size:clamp(34px,6vw,60px)}
 .welcome-screen[hidden]{display:none!important}
+.welcome-screen .btn{position:absolute;bottom:36px;left:0;right:0;margin:0 auto;width:max-content;min-width:240px}
+
+/* Logo del login */
 .alogo{display:block;width:120px;height:120px;object-fit:contain;margin:0 auto 14px;border-radius:24px}
+/* GIF de fondo de la pantalla de inicio (solo se ve antes de iniciar sesión) */
+.welcome-screen::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),  /* capa oscura para que se lea el texto */
+    url("img/fondo.gif") center / cover no-repeat;
+}

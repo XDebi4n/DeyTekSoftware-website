@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DeyTek Claud</title>
+  <title>DEYTEK CLAUD</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="mobile.css">
   <link rel="stylesheet" href="desktop.css">
@@ -12,16 +12,17 @@
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <header class="topbar glass">
-  <img class="tlogo" src="img/deytek.png" alt="DeyTek" onerror="this.remove()">
-  <span class="ttitle">DeyTek Claud</span>
+  <img class="tlogo" src="img/deytekclaud.png" alt="DeyTek" onerror="this.remove()">
+  <span class="ttitle">DEYTEK CLAUD</span>
+  <!-- Sin sesión no se ve; con sesión muestra tu foto (abre tu perfil). auth.js lo necesita, no lo borres -->
   <button type="button" class="btn glass acct" id="acct">Entrar</button>
   <!-- Los pide social.js; en escritorio no se usan -->
   <button type="button" class="btn glass social-trigger" id="social-btn" hidden>Amigos <span class="badge" id="sbadge" hidden>0</span></button>
 </header>
 
 <main id="welcome" class="welcome-screen">
-  <img src="img/deyteknoti.png" alt="" onerror="this.remove()">
-  <h1>DeyTek Claud</h1>
+  <img src="img/deytekclaud.png" alt="" onerror="this.remove()">
+  <h1>DEYTEK CLAUD</h1>
   <p>Inicia sesión para ver tus amigos, chatear y llamar.</p>
   <button type="button" class="btn solid" id="welcome-btn">Iniciar sesión</button>
 </main>
@@ -30,7 +31,7 @@
   <button type="button" class="x" id="sclose" aria-label="Cerrar">×</button>
   <div class="social-wrap">
     <aside class="social-side">
-      <h3>DeyTek Claud - Amigos</h3>
+      <h3>Amigos</h3>
       <form id="fsearch" class="fsearch">
         <input id="fquery" type="text" placeholder="ID de amigo (ej. DTK-12345)…" required>
         <button type="submit" class="btn solid sm" aria-label="Agregar">+</button>
@@ -69,17 +70,19 @@
   </div>
 </dialog>
 
+<!-- LOGIN: cambia aquí los textos y se quedan. Los que tienen data-signup cambian al "Crear cuenta". -->
 <dialog id="auth" aria-labelledby="at">
-  <h3 id="at">Entra a DEYTEK CLAUD</h3>
+  <img class="alogo" src="img/deytekclaud.png" alt="DeyTek Claud" width="512" height="512" onerror="this.remove()">
+  <h3 id="at" data-signup="Crea tu cuenta">Entra a DEYTEK CLAUD</h3>
   <!-- Google no permite iniciar sesión dentro de apps Electron: se oculta en escritorio -->
   <button type="button" class="btn solid" id="google" hidden>Continuar con Google</button>
   <form id="authform">
     <input id="aname" name="name" placeholder="Nombre" autocomplete="name" maxlength="40" hidden>
     <input id="aemail" name="email" type="email" placeholder="Correo" autocomplete="email" required>
     <input id="apass" name="pass" type="password" placeholder="Contraseña (mín. 6)" minlength="6" autocomplete="current-password" required>
-    <button type="submit" class="btn solid" id="asubmit">Iniciar sesión</button>
+    <button type="submit" class="btn solid" id="asubmit" data-signup="Crear cuenta">Iniciar sesión</button>
   </form>
-  <p class="sw"><span id="stxt">¿No tienes cuenta?</span> <button type="button" class="link" id="swap">Crear cuenta</button></p>
+  <p class="sw"><span id="stxt" data-signup="¿Ya tienes cuenta?">¿No tienes cuenta?</span> <button type="button" class="link" id="swap" data-signup="Iniciar sesión">Crear cuenta</button></p>
   <button type="button" class="link" id="reset">Olvidé mi contraseña</button>
   <p id="astatus" role="status"></p>
   <button type="button" class="btn glass" id="aclose">Cerrar</button>
