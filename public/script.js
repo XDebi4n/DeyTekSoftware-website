@@ -38,7 +38,7 @@ const roles = [
 ];
 
 const team = [
-
+  {id: "DTK-73081", r:"Creador"},
   {id: "DTK-64091", r:"Chupador de penes"},
 ]
 
@@ -61,7 +61,6 @@ function filter(g){
 }
 $("#filters").onclick = e => e.target.tagName==="BUTTON" && filter(e.target.textContent);
 
-/*Busqueda global*/
 const index = [
   ...games.map((g,i)=>({t:"Juego",n:g.n,h:"g-"+i,k:(g.n+g.g+g.d+g.p+Object.keys(g.links).map(k=>PLAT[k]).join(" "))})),
   ...team.map((m,i)=>({t:"Equipo",get n(){return m.name||m.r},h:"m-"+i,get k(){return (m.name||"")+" "+m.r}})),
