@@ -1,0 +1,23 @@
+{
+  "name": "deytek-desktop",
+  "version": "1.0.0",
+  "description": "DeyTek Claud - app de escritorio: amigos, chat y llamadas",
+  "main": "main.js",
+  "author": "DeyTek Software",
+  "license": "UNLICENSED",
+  "scripts": {
+    "sync": "node scripts/sync.js",
+    "start": "node scripts/sync.js && electron .",
+    "dist": "node scripts/sync.js && electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.deytek.desktop",
+    "productName": "DeyTek Claud",
+    "files": ["main.js", "preload.js", "app/**/*"],
+    "win": { "target": "nsis" }
+  }
+}
