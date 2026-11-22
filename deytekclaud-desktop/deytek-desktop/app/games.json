@@ -1,0 +1,25 @@
+{
+  "games": [
+    {
+      "id": "hollowjackhd",
+      "name": "Hollow Jack HD Edition",
+      "tagline": "Bienvenido a The Hollow Jack.",
+      "description": "Al principio, usa la cámara para activar una palanca cerca de la salida. El juego comenzará allí. Repara los siete sistemas eléctricos y comenzará una persecución en la que deberás huir de The Hollow Jack y salir ileso.",
+      "color": "#e5384f",
+      "logo": "media/hollowjack/ico.jpg",
+      "background": "media/hollowjack/background.jpg",
+      "video": "media/hollowjack/hollowjacktrailer.mp4",
+      "screenshots": [
+        "media/hollowjack/foto1.png",
+        "media/hollowjack/foto2.png",
+        "media/hollowjack/foto3.png"
+      ],
+      "version": "1.0v",
+      "size": "126 MB",
+      "downloadUrl": "https://github.com/XDebi4n/hollowjackrealese/releases/download/1.0v/Hollow.Jack.HD.Edition.zip",
+      "sha256": "",
+      "exe": "Hollow Jack HD Edition/Hollow Jack HD Edition/Hollow Jack.exe",
+      "args": []
+    }
+  ]
+}

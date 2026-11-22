@@ -1,8 +1,8 @@
 /* desktop.js - lo propio de la app de escritorio:
-   - muestra amigos/chat al iniciar sesión
    - textos del login editables desde index.html (auth.js ya no los pisa)
    - sonido de llamada y de notificación (tus archivos en app/sounds/ o uno sintetizado)
-   - notificaciones nativas, parpadeo y contador de no leídos */
+   - notificaciones nativas, parpadeo y contador de no leídos
+   - el panel de Amigos/chat lo abre y cierra el botón "Amigos" (launcher.js); aquí solo se abre solo si entra una llamada */
 (() => {
   /* ======== AJUSTES (puedes cambiarlos) ======== */
   const OPEN_LOGIN_AT_START = false; // true = abre el login solo al iniciar la app
@@ -111,6 +111,7 @@
   window.deytekRing = on => {
     stopRing();
     if(on){
+      if(dlg && !dlg.open && window.deytekUser) dlg.show(); // llamada entrante: abre el panel para poder contestar
       if(bufs.call) callSrc = playBuf(bufs.call, true, VOL_CALL);
       else{ sweep(); sirenT = setInterval(sweep, 1650); }
       const name = ($("#ci-name") || {}).textContent || "Alguien";
@@ -137,9 +138,10 @@
     catch(e){ nameCache[uid] = "Jugador"; }
     return nameCache[uid];
   }
+  /* Solo cuenta como "lo estás viendo" si el panel de amigos está abierto con ese chat */
   const viewing = uid => {
     const on = document.querySelector("#ffriend-list .fbtn.on");
-    return document.hasFocus() && !!on && on.dataset.chat === uid;
+    return !!dlg && dlg.open && document.hasFocus() && !!on && on.dataset.chat === uid;
   };
   function describe(m){
     if(m.text) return String(m.text).slice(0, 120);
@@ -199,7 +201,8 @@
     chatUn.forEach(f => { try{ f(); }catch(e){} }); chatUn.clear();
     firstF = true; unread = 0; paintUnread();
   }
-    /* ---------- Botones de ventana (barra personalizada) ---------- */
+
+  /* ---------- Botones de ventana (barra personalizada) ---------- */
   const wc = $("#wc"), wmax = $("#w-max");
   if(D.win && wc){
     $("#w-min").onclick = () => D.win("min");
@@ -212,11 +215,6 @@
   const wbtn = $("#welcome-btn");
   if(wbtn) wbtn.onclick = () => { if(window.openAuth) window.openAuth(); };
 
-  /* La pantalla de amigos/chat nunca se queda cerrada mientras haya sesión */
-  if(dlg) dlg.addEventListener("close", () => {
-    if(window.deytekUser) setTimeout(() => { if(window.deytekUser && !dlg.open) dlg.show(); }, 0);
-  });
-
   document.addEventListener("deytek:auth", () => {
     const u = window.deytekUser;
     cleanup();
@@ -226,8 +224,7 @@
       if(ready && OPEN_LOGIN_AT_START && window.openAuth) window.openAuth();
       return;
     }
-    if(welcome) welcome.hidden = true;
-    if(dlg && !dlg.open) dlg.show(); // no modal: queda como pantalla principal
+    if(welcome) welcome.hidden = true; // el launcher (launcher.js) toma la pantalla; el panel de Amigos queda cerrado
     unsubF = db.collection("friendships").where("users", "array-contains", u.uid)
       .onSnapshot(snap => onFriends(u, snap), err => console.error(err));
   });

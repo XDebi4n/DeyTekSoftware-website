@@ -8,3 +8,18 @@ contextBridge.exposeInMainWorld("deytekDesktop", {
   win: a => ipcRenderer.send("win", String(a)),
   onMax: cb => ipcRenderer.on("win-max", (_e, v) => cb(!!v))
 });
+
+/* Lanzador de juegos */
+const on = (ch, cb) => ipcRenderer.on(ch, (_e, d) => cb(d));
+contextBridge.exposeInMainWorld("deytekGames", {
+  list: () => ipcRenderer.invoke("games:list"),
+  install: id => ipcRenderer.invoke("games:install", String(id)),
+  cancel: id => ipcRenderer.invoke("games:cancel", String(id)),
+  play: id => ipcRenderer.invoke("games:play", String(id)),
+  uninstall: id => ipcRenderer.invoke("games:uninstall", String(id)),
+  openFolder: id => ipcRenderer.invoke("games:folder", String(id)),
+  onProgress: cb => on("games:progress", cb),
+  onDone: cb => on("games:done", cb),
+  onError: cb => on("games:error", cb),
+  onRunning: cb => on("games:running", cb)
+});

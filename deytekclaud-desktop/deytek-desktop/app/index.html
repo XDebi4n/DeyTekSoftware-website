@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="mobile.css">
   <link rel="stylesheet" href="desktop.css">
+  <link rel="stylesheet" href="launcher.css">
 </head>
 <body>
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -14,10 +15,12 @@
 <header class="topbar glass">
   <img class="tlogo" src="img/deytekclaud.png" alt="DeyTek" onerror="this.remove()">
   <span class="ttitle">DEYTEK CLAUD</span>
+  <!-- Abre el panel de chat y llamadas. Solo se ve con sesión iniciada (lo controla launcher.js) -->
+  <button type="button" class="btn glass" id="friends-btn" hidden>Amigos <span class="badge" id="fbadge" hidden>0</span></button>
   <!-- Sin sesión no se ve; con sesión muestra tu foto (abre tu perfil). auth.js lo necesita, no lo borres -->
   <button type="button" class="btn glass acct" id="acct">Entrar</button>
   <!-- Los pide social.js; en escritorio no se usan -->
-<button type="button" class="btn glass social-trigger" id="social-btn" hidden>Amigos <span class="badge" id="sbadge" hidden>0</span></button>
+  <button type="button" class="btn glass social-trigger" id="social-btn" hidden>Amigos <span class="badge" id="sbadge" hidden>0</span></button>
   <!-- Botones de ventana propios (la barra de Windows está desactivada en main.js) -->
   <div class="wc" id="wc">
     <button type="button" class="wbtn" id="w-min" aria-label="Minimizar" title="Minimizar">
@@ -30,13 +33,20 @@
     <button type="button" class="wbtn close" id="w-close" aria-label="Cerrar" title="Cerrar">
       <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
     </button>
-  </div></header>
+  </div>
+</header>
 
 <main id="welcome" class="welcome-screen">
   <img src="img/deytekclaud.png" alt="" onerror="this.remove()">
   <h1>DEYTEK CLAUD</h1>
-  <p>Inicia sesión para ver tus amigos, chatear y llamar.</p>
+  <p>Inicia sesión para ver tus juegos, chatear y llamar.</p>
   <button type="button" class="btn solid" id="welcome-btn">Iniciar sesión</button>
+</main>
+
+<!-- Launcher de juegos: lo llena launcher.js al iniciar sesión -->
+<main id="launcher" class="launcher" hidden>
+  <nav class="lrail" id="lrail" aria-label="Juegos"></nav>
+  <section class="lmain" id="lmain"></section>
 </main>
 
 <dialog id="social-dlg" aria-label="Amigos y Chat">
@@ -125,6 +135,7 @@
 <script src="auth.js"></script>
 <script src="social.js"></script>
 <script src="call.js"></script>
+<script src="launcher.js"></script>
 <script src="desktop.js"></script>
 </body>
 </html>
