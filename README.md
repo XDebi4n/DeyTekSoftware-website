@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="img/deytek.png" alt="Deytek Software" width="120">
+<img src="public/img/deyteknoti.png" alt="Deytek Software" width="120">
 
 # Deytek Software
 
