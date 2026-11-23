@@ -6,7 +6,7 @@
 
 **Estudio independiente de videojuegos · Comunidad · Cuentas · Chat**
 
-Una web con estética *liquid glass* en blanco y negro, foro, amigos con chat, catálogo de juegos y reclutamiento de colaboradores. Sin frameworks, sin proceso de compilación.
+Una web con estética *liquid glass* en blanco y negro, foro, amigos con chat, catálogo de juegos, reclutamiento de colaboradores y descarga de la app de escritorio. La web no usa frameworks ni proceso de compilación.
 
 <br>
 
@@ -32,6 +32,7 @@ Una web con estética *liquid glass* en blanco y negro, foro, amigos con chat, c
 - [🚀 Inicio rápido](#-inicio-rápido)
 - [🔥 Configurar Firebase](#-configurar-firebase)
 - [🌐 Publicar el sitio](#-publicar-el-sitio)
+- [💻 App de escritorio y botón Descargar](#-app-de-escritorio-y-botón-descargar)
 - [🎮 Agregar juegos](#-agregar-juegos)
 - [👥 Colaboradores (Equipo)](#-colaboradores-equipo)
 - [🛡️ Administradores y solicitudes](#️-administradores-y-solicitudes)
@@ -54,6 +55,7 @@ Una web con estética *liquid glass* en blanco y negro, foro, amigos con chat, c
 | 🎨 **Diseño liquid glass** | Vidrio esmerilado, fondo en video, animaciones al hacer scroll y versión completa para celular. |
 | 🔎 **Búsqueda global** | Encuentra juegos, personajes, vacantes y secciones. Atajo `Ctrl + K`. |
 | 🎮 **Catálogo de juegos** | Filtros por género, ficha con tráiler, galería, personajes destacados y botón **Obtener juego** por plataforma. |
+| 💻 **App de escritorio** | Botón **Descargar** en la portada, con el enlace configurable desde `descarga.json`. |
 | 👤 **Cuentas** | Inicio de sesión con **Google** o correo y contraseña, foto de perfil (incluye GIF) y un **ID único** `DTK-12345`. |
 | 🗣️ **Foro** | Comentarios con tema, calificación de 1 a 5 estrellas, respuestas y me gusta / no me gusta. |
 | 💬 **Amigos y chat** | Solicitudes de amistad por ID, chat privado con fotos, GIFs y videos, bloqueos y llamadas. |
@@ -68,6 +70,7 @@ Una web con estética *liquid glass* en blanco y negro, foro, amigos con chat, c
 | Quiero... | Hago esto |
 |---|---|
 | **Crear una cuenta** | Botón **Entrar** (arriba a la derecha) → *Continuar con Google* o *Crear cuenta* con correo. |
+| **Descargar la app de escritorio** | Botón **Descargar** de la portada. |
 | **Editar mi perfil** | Toca tu foto → cambia nombre y foto → **Guardar cambios**. Ahí también ves y copias **Tu ID**. |
 | **Ver un juego** | Toca su tarjeta: tráiler, fotos, historia, personajes y **Obtener juego**. |
 | **Buscar algo** | Barra del menú o `Ctrl + K`. |
@@ -147,6 +150,62 @@ Después de publicar:
 
 - Agrega tu dominio en *Authentication → Dominios autorizados*.
 - Recarga con `Ctrl + F5` para saltarte la caché y ver la versión nueva.
+
+---
+
+## 💻 App de escritorio y botón Descargar
+
+La portada tiene un botón **Descargar** que baja el instalador de **DeyTek Claud**, la app de escritorio (launcher de juegos con amigos, chat y llamadas). La app vive en una carpeta aparte (`deytek-desktop`) y se instala como un programa normal de Windows.
+
+### Poner el enlace de descarga
+
+El botón no tiene el enlace escrito en el HTML: lo lee de [`descarga.json`](descarga.json), que carga [`descarga.js`](descarga.js).
+
+```json
+{
+  "url": "https://github.com/TU-USUARIO/deytekclaud/releases/latest/download/DeyTekClaud-Setup.exe",
+  "version": "1.0.0",
+  "texto": "Descargar"
+}
+```
+
+| Campo | Qué hace |
+|---|---|
+| `url` | Enlace directo al instalador. Debe empezar con `https://`. |
+| `version` | Opcional. Aparece al dejar el mouse sobre el botón. |
+| `texto` | Lo que dice el botón. |
+
+Si el archivo falta o la `url` no es válida, el botón muestra **Próximamente** y no descarga. Para probarlo en tu PC abre el sitio con Live Server o `npx serve .`: desde un archivo suelto el navegador no deja leer el `.json`.
+
+### Sacar el instalador (.exe)
+
+Se hace desde la carpeta `deytek-desktop`, necesitas [Node.js](https://nodejs.org) (versión LTS):
+
+```bash
+npm install        # solo la primera vez
+npm run dist       # genera el instalador
+```
+
+El instalador queda en `dist/DeyTekClaud-Setup.exe`. Haz doble clic para probarlo antes de publicarlo.
+
+### Publicarlo en GitHub Releases
+
+1. Crea un repositorio **público** (por ejemplo `deytekclaud`).
+2. Entra a **Releases → Create a new release**, escribe un tag (`v1.0.0`) y un título.
+3. Arrastra **solo** `DeyTekClaud-Setup.exe` (no hace falta subir los demás archivos de `dist/`).
+4. Pulsa **Publish release**.
+
+Con el enlace `.../releases/latest/download/DeyTekClaud-Setup.exe` el botón siempre baja la release más reciente, así que **no tienes que tocar la web en cada versión nueva**. Para eso el instalador debe llamarse siempre igual; ya está configurado así en el `package.json` de la app (`artifactName`).
+
+### Actualizar la app
+
+1. Haz tus cambios en `deytek-desktop`.
+2. Ejecuta `npm run dist`.
+3. Crea una release nueva (`v1.0.1`) y sube el nuevo `.exe`.
+
+> ℹ️ Windows puede mostrar una advertencia de **SmartScreen** al instalar, porque el instalador no tiene firma digital. Es normal.
+
+> 🎮 Cómo agregar juegos al launcher de escritorio (descarga, actualizaciones, video y fotos) está explicado en el README de la carpeta `deytek-desktop`.
 
 ---
 
@@ -325,6 +384,8 @@ deytek-software/
 ├── styles.css           Diseño liquid glass
 ├── mobile.css           Ajustes para celular
 ├── script.js            Datos editables (juegos, equipo, vacantes, admins), búsqueda y formulario Únete
+├── descarga.js          Botón Descargar de la portada
+├── descarga.json        Enlace de descarga de la app de escritorio (editable)
 ├── auth.js              Cuentas: Google / correo, perfil, foto e ID único
 ├── social.js            Amigos y chat
 ├── call.js              Llamadas (WebRTC)
@@ -337,6 +398,8 @@ deytek-software/
 ├── firestore.rules      Reglas de seguridad
 └── img/                 Logo, imágenes, videos y fondo
 ```
+
+La app de escritorio (`deytek-desktop`) es un proyecto aparte que reutiliza `auth.js`, `social.js`, `call.js`, los CSS y `firebase-config.js` de esta carpeta.
 
 ---
 
@@ -367,6 +430,9 @@ deytek-software/
 | No aparece un colaborador | Su ID está mal escrito o aún no ha iniciado sesión. Revisa también que `users` sea de lectura pública. |
 | El botón de una plataforma no sale | La clave en `links` no es válida. Usa `steam`, `ps`, `xbox`, `switch`, `epic`, `ios`, `android` o `pc`. |
 | Los GIFs o videos del chat no suben | Falta habilitar Firebase Storage y sus reglas para `chatmedia/`. |
+| El botón **Descargar** dice *Próximamente* | `descarga.json` no existe, está mal escrito o su `url` no empieza con `https://`. Abre el sitio por http (no como archivo) y revisa la consola del navegador. |
+| El botón **Descargar** lleva a una página 404 | Aún no hay una release publicada, el repositorio es privado o el nombre del archivo no es `DeyTekClaud-Setup.exe`. |
+| `npm run dist` falla con *symbolic link* | Abre la terminal como administrador o activa el Modo desarrollador de Windows, y repite el comando. |
 
 ---
 
@@ -376,6 +442,7 @@ deytek-software/
 - El perfil público (`users`) expone solo nombre, foto e ID. El correo no se guarda ahí.
 - El acceso de administrador se valida **dos veces**: en la interfaz (`ADMIN_IDS`) y en el servidor (`isAdmin()` en las reglas).
 - Todo texto de usuarios se escapa antes de mostrarse en la página.
+- El enlace de `descarga.json` solo se usa si empieza con `http://` o `https://`.
 - No subas a GitHub credenciales privadas ni cuentas de servicio.
 
 Si encuentras una vulnerabilidad, repórtala de forma privada al equipo antes de hacerla pública.
@@ -389,7 +456,7 @@ Si encuentras una vulnerabilidad, repórtala de forma privada al equipo antes de
 3. Haz tus cambios y un *commit* claro.
 4. Abre un *Pull Request* explicando qué cambia y por qué.
 
-El proyecto usa **HTML, CSS y JavaScript puros**, sin pasos de compilación. Mantén ese enfoque.
+La web usa **HTML, CSS y JavaScript puros**, sin pasos de compilación. Mantén ese enfoque. La app de escritorio sí usa `npm` y Electron, y vive en su propia carpeta.
 
 ---
 

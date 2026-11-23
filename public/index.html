@@ -50,14 +50,14 @@
 
 <main>
   <section id="inicio" class="hero">
-   <!-- <img class="hero-logo" src="img/deytek.png" alt="DeyTek Logo"> -->
+   <img class="hero-logo" src="img/deytekclaud.png" alt="DeyTek Logo">
     
   <!--  <p class="chip glass">DEYTEK</p> -->
-    <h1>DEYTEK CLAUD<br>Y JUEGA CON AMIGOS</h1>
-    <p class="lead">Crea una Cuenta en deyteksoftware.com, ara usar DeyTek Claud y disfrutar de nuestros Juegos!</p>
+    <h1>DESCARGA<br>DEYTEK CLAUD</h1>
+    <p class="lead">Crea una Cuenta en deyteksoftware.com, para usar DeyTek Claud y disfrutar de nuestros Juegos!</p>
     <div class="actions">
-      <a class="btn solid" href="#juegos">Ver juegos</a>
-      <a class="btn glass" onclick="if(window.openAuth) window.openAuth(); return false;" href="#">Crear cuenta</a>
+      <!-- El enlace de descarga se pone en descarga.json (lo carga descarga.js) -->
+      <a class="btn solid" id="dl-desktop" href="#">Descargar</a>
     </div>
   </section>
 
@@ -244,6 +244,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="script.js"></script>
+<script src="descarga.js"></script>
 <script src="auth.js"></script>
 <script src="social.js"></script>
 <script src="call.js"></script>

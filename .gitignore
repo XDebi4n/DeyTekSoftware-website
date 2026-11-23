@@ -67,3 +67,10 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+# Ignorar cualquier carpeta dist en cualquier nivel del proyecto
+**/dist/
+dist/
+cat >> .gitignore <<'EOF'
+dist/
+node_modules/
+EOF
